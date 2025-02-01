@@ -61,10 +61,11 @@ cd backend
 npm start
 ```
 
-By default, it should run on `http://localhost:4000/`.  
+By default, it should run on `http://localhost:3001/`.  
 (Check `backend` code or environment variables to confirm the port.)
 
 ### 2. Start the Frontend
+- Open new Terminal on your Code Editor
 
 ```bash
 cd frontend
