@@ -16,6 +16,7 @@ import SignUpPage from "./pages/SignUpPage";
 import LedgerPage from "./pages/LedgerPage";
 import LearnPage from "./pages/LearnPage";
 import Utils from "./components/Utils";
+import ChatPage from "./pages/ChatPage"
 
 const App = () => {
   return (
@@ -31,6 +32,9 @@ const App = () => {
           {/* Route for the item detail page */}
           <Route path="/items/:id" element={<ItemDetailPage />} />
 
+          {/* Route for the chat page */}
+          <Route path="/chat/:id" element={<ChatPage />} />
+          
           {/* Route for the checkout page */}
           <Route path="/checkout/:id" element={<CheckoutPage />} />
 
