@@ -216,7 +216,7 @@ function ItemDetailPage() {
             borderRadius={"lg"}
             w="50%"
             bg="blue.500"
-            onClick={handleEmailClick}
+            onClick={() => navigate(`/chat/${id}`)}
             _hover={{ bg: "blue.600" }}
             isDisabled={isOwner}
             title={isOwner ? "This is your item" : ""}
@@ -224,11 +224,7 @@ function ItemDetailPage() {
             <HStack spacing={2}>
               <Icon as={MdEmail} boxSize={5} />
               <Text>
-                {isOwner
-                  ? "Your Item"
-                  : showEmail && lenderEmail
-                  ? lenderEmail
-                  : "Message Lender"}
+                Message Lender
               </Text>
             </HStack>
           </Button>
