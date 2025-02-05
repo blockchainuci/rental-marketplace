@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const middleware = require("../middleware");
 
 // Create carbon data
-router.post("/", async (req, res) => {
+router.post("/", middleware.decodeToken, async (req, res) => {
   try {
     const {
       item_id,
@@ -55,7 +56,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all carbon data
-router.get("/", async (req, res) => {
+router.get("/", middleware.decodeToken, async (req, res) => {
   try {
     const allCarbon = await pool.query(
       `SELECT c.*, i.name as item_name 
@@ -71,7 +72,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get carbon data by item_id
-router.get("/item/:item_id", async (req, res) => {
+router.get("/item/:item_id", middleware.decodeToken, async (req, res) => {
   try {
     const { item_id } = req.params;
     const carbon = await pool.query(
@@ -94,7 +95,7 @@ router.get("/item/:item_id", async (req, res) => {
 });
 
 // Get carbon data by id
-router.get("/:id", async (req, res) => {
+router.get("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const carbon = await pool.query(
@@ -117,7 +118,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update carbon data
-router.put("/:id", async (req, res) => {
+router.put("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -171,7 +172,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete carbon data
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const deleteCarbon = await pool.query(
@@ -191,7 +192,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Emission Calculator
-router.get("/emission-calculator/:item_id", async (req, res) => {
+router.get("/emission-calculator/:item_id", middleware.decodeToken, async (req, res) => {
   try {
     const { item_id } = req.params;
 

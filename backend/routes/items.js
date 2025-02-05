@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const OpenAI = require("openai");
+const middleware = require("../middleware");
 
 // Initialize OpenAI configuration
 const openai = new OpenAI({
@@ -9,7 +10,7 @@ const openai = new OpenAI({
 });
 
 // Create item with GPT-generated details using vision
-router.post("/", async (req, res) => {
+router.post("/", middleware.decodeToken, async (req, res) => {
   try {
     const {
       name,
@@ -133,7 +134,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all items
-router.get("/", async (req, res) => {
+router.get("/", middleware.decodeToken, async (req, res) => {
   try {
     const allItems = await pool.query("SELECT * FROM Items");
     res.json(allItems.rows);
@@ -144,7 +145,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get ledger items (items with status Renting or Returned)
-router.get("/ledger", async (req, res) => {
+router.get("/ledger", middleware.decodeToken, async (req, res) => {
   try {
     const query = `
       SELECT 
@@ -170,7 +171,7 @@ router.get("/ledger", async (req, res) => {
 });
 
 // Get item by id
-router.get("/:id", async (req, res) => {
+router.get("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const item = await pool.query("SELECT * FROM items WHERE id = $1", [id]);
@@ -182,7 +183,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update item
-router.put("/:id", async (req, res) => {
+router.put("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -217,7 +218,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete item
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query("DELETE FROM items WHERE id = $1", [id]);
@@ -229,7 +230,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Emission Calculator
-router.post("/emission-calculator", async (req, res) => {
+router.post("/emission-calculator", middleware.decodeToken, async (req, res) => {
   try {
     const {
       estimated_weight_kg,

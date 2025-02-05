@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const pool = require("../db");
+const middleware = require("../middleware");
 
 // Create lender record
-router.post("/", async (req, res) => {
+router.post("/", middleware.decodeToken, async (req, res) => {
   try {
     const { item_id, email } = req.body;
     const newLender = await pool.query(
@@ -17,7 +18,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all lenders
-router.get("/", async (req, res) => {
+router.get("/", middleware.decodeToken, async (req, res) => {
   try {
     const allLenders = await pool.query("SELECT * FROM Lender");
     res.json(allLenders.rows);
@@ -28,7 +29,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get lender and item details by item_id
-router.get("/:item_id", async (req, res) => {
+router.get("/:item_id", middleware.decodeToken, async (req, res) => {
   try {
     const { item_id } = req.params;
 
@@ -63,7 +64,7 @@ router.get("/:item_id", async (req, res) => {
 });
 
 // Update lender status
-router.put("/:item_id", async (req, res) => {
+router.put("/:item_id", middleware.decodeToken, async (req, res) => {
   try {
     const { item_id } = req.params;
     const { is_picked_up, is_returned } = req.body;
@@ -125,7 +126,7 @@ router.put("/:item_id", async (req, res) => {
 });
 
 // Delete lender record
-router.delete("/:item_id", async (req, res) => {
+router.delete("/:item_id", middleware.decodeToken, async (req, res) => {
   try {
     const { item_id } = req.params;
     await pool.query("DELETE FROM lender WHERE item_id = $1", [item_id]);
@@ -137,7 +138,7 @@ router.delete("/:item_id", async (req, res) => {
 });
 
 // Get all items for a lender by email
-router.get("/email/:email", async (req, res) => {
+router.get("/email/:email", middleware.decodeToken, async (req, res) => {
   try {
     const { email } = req.params;
 
