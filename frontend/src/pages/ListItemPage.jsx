@@ -19,7 +19,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage, auth } from "../firebase";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { getBearerToken } from "../contexts/AuthContext";
 function ListItemPage() {
   const [images, setImages] = useState([]);
   const [imageFiles, setImageFiles] = useState(Array(4).fill(null));
@@ -91,7 +91,7 @@ function ListItemPage() {
         alert("Please fill in all required fields");
         return;
       }
-
+      const token = await getBearerToken();
       // Create item in database with email
       const response = await axios.post(`http://localhost:3001/items`, {
         name,
@@ -102,6 +102,11 @@ function ListItemPage() {
         images,
         email: userEmail,
         status: "Listed",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       alert("Item listed successfully");

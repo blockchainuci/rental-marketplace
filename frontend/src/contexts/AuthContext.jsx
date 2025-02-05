@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { auth } from "../firebase";
+import { getAuth } from "firebase/auth";
 
 const AuthContext = createContext();
 
@@ -30,4 +31,13 @@ export function AuthProvider({ children }) {
       {!loading && children}
     </AuthContext.Provider>
   );
+}
+
+export async function getBearerToken() {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+        return await user.getIdToken();
+    }
+    return null;
 }
