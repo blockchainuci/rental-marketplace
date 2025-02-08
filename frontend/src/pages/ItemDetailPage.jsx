@@ -150,15 +150,16 @@ function ItemDetailPage() {
   };
 
   const handleEmailClick = () => {
-    if (lenderEmail) {
-      setShowEmail(true);
-      const subject = `Question about ${item.name}`;
-      const body = `Hi, I'm interested in renting your ${item.name}.`;
-      const mailtoLink = `mailto:${lenderEmail}?subject=${encodeURIComponent(
-        subject
-      )}&body=${encodeURIComponent(body)}`;
-      window.open(mailtoLink, "_blank");
-    }
+    // history.push("/chats");
+    // if (lenderEmail) {
+    //   setShowEmail(true);
+    //   const subject = `Question about ${item.name}`;
+    //   const body = `Hi, I'm interested in renting your ${item.name}.`;
+    //   const mailtoLink = `mailto:${lenderEmail}?subject=${encodeURIComponent(
+    //     subject
+    //   )}&body=${encodeURIComponent(body)}`;
+    //   window.open(mailtoLink, "_blank");
+    // }
   };
 
   if (loading) {
@@ -211,27 +212,31 @@ function ItemDetailPage() {
               <Text>{isOwner ? "Your Item" : "Rent Now"}</Text>
             </HStack>
           </Button>
-          <Button
-            size="xl"
-            borderRadius={"lg"}
-            w="50%"
-            bg="blue.500"
-            onClick={handleEmailClick}
-            _hover={{ bg: "blue.600" }}
-            isDisabled={isOwner}
-            title={isOwner ? "This is your item" : ""}
-          >
-            <HStack spacing={2}>
-              <Icon as={MdEmail} boxSize={5} />
-              <Text>
-                {isOwner
-                  ? "Your Item"
-                  : showEmail && lenderEmail
-                  ? lenderEmail
-                  : "Message Lender"}
-              </Text>
-            </HStack>
-          </Button>
+          <a href="/chats" >
+            <Button
+              size="xl"
+              borderRadius={"lg"}
+              w="50%"
+              bg="blue.500"
+              // href="/chats"
+              // onClick={handleEmailClick}
+              // TODO: revisit useParams
+              _hover={{ bg: "blue.600" }}
+              isDisabled={isOwner}
+              title={isOwner ? "This is your item" : ""}
+            >
+              <HStack spacing={2}>
+                <Icon as={MdEmail} boxSize={5} />
+                <Text>
+                  {isOwner
+                    ? "Your Item"
+                    : showEmail && lenderEmail
+                      ? lenderEmail
+                      : "Message Lender"}
+                </Text>
+              </HStack>
+            </Button>
+          </a>
         </Flex>
 
         <Box h="2px" bg="gray.200" my={4} />
@@ -390,11 +395,10 @@ function ItemDetailPage() {
                       </HStack>
                     </HStack>
                     <Box
-                      w={`${
-                        (emissionsData.breakdown.material_emissions_kg /
+                      w={`${(emissionsData.breakdown.material_emissions_kg /
                           emissionsData.total_emissions_kg) *
                         100
-                      }%`}
+                        }%`}
                       h="8px"
                       bg="blue.400"
                       borderRadius="full"
@@ -430,11 +434,10 @@ function ItemDetailPage() {
                       </HStack>
                     </HStack>
                     <Box
-                      w={`${
-                        (emissionsData.breakdown.transport_emissions_kg /
+                      w={`${(emissionsData.breakdown.transport_emissions_kg /
                           emissionsData.total_emissions_kg) *
                         100
-                      }%`}
+                        }%`}
                       h="8px"
                       bg="orange.400"
                       borderRadius="full"
@@ -469,11 +472,10 @@ function ItemDetailPage() {
                       </HStack>
                     </HStack>
                     <Box
-                      w={`${
-                        (emissionsData.breakdown.usage_emissions_kg /
+                      w={`${(emissionsData.breakdown.usage_emissions_kg /
                           emissionsData.total_emissions_kg) *
                         100
-                      }%`}
+                        }%`}
                       h="8px"
                       bg="purple.400"
                       borderRadius="full"
