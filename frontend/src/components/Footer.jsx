@@ -6,6 +6,7 @@ import {
   MdStore,
   MdReceipt,
   MdBook,
+  MdChatBubble
 } from "react-icons/md";
 
 const Footer = () => {
@@ -46,6 +47,7 @@ const Footer = () => {
       <NavItem icon={MdStore} label="My Listings" path="/lend" />
       <NavItem icon={MdReceipt} label="Ledger" path="/ledger" />
       <NavItem icon={MdBook} label="Learn" path="/learn" />
+      <NavItem icon={MdChatBubble} label="Chats" path="/chats" />
     </Flex>
   );
 };

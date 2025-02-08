@@ -2,6 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
+
+const http = require("http");
+const server = http.createServer(app);
+
 const port = 3001;
 
 app.use(cors());
@@ -25,6 +29,26 @@ app.get("/", async (req, res) => {
     console.error(error);
   }
 });
+
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+})
+
+io.on("connection", (socket) => {
+  console.log("User conencted:", socket.id);
+
+  socket.on("sendMessage", (message) => {
+    io.emit("receiveMessage", message);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id)
+  })
+})
 
 app.listen(port, () => {
   console.log(`server is running on ${port}`);
