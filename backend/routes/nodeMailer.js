@@ -11,19 +11,18 @@ router.get('/test', (req, res) => {
 // POST route to send email
 router.post('/send-email', async (req, res) => {
     try {
-        const { to, subject, text } = req.body;
+        const { to, subject, html, text } = req.body;
 
         // Email options
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: to,
             subject: subject,
-            text: text
+            html: html,        // Make sure this is being used
+            text: text || ''   // Fallback text
         };
 
-        // Send email
         await transporter.sendMail(mailOptions);
-        
         res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
         console.error('Error sending email:', error);
