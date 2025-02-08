@@ -3,6 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
+// import { chatroomRouter } from "./routes/chatrooms.js"
+const chatroomRouter = require("./routes/chatrooms")
+
 const http = require("http");
 const server = http.createServer(app);
 
@@ -21,6 +24,7 @@ app.use("/lenders", require("./routes/lenders"));
 app.use("/renters", require("./routes/renters"));
 app.use("/users", require("./routes/users"));
 app.use("/carbon", require("./routes/carbon"));
+app.use("/chatrooms", chatroomRouter)
 
 app.get("/", async (req, res) => {
   try {
@@ -29,26 +33,6 @@ app.get("/", async (req, res) => {
     console.error(error);
   }
 });
-
-const { Server } = require("socket.io");
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-})
-
-io.on("connection", (socket) => {
-  console.log("User conencted:", socket.id);
-
-  socket.on("sendMessage", (message) => {
-    io.emit("receiveMessage", message);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id)
-  })
-})
 
 app.listen(port, () => {
   console.log(`server is running on ${port}`);
