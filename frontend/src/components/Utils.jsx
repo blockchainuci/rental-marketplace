@@ -1,5 +1,5 @@
 import { HStack, Button, Flex, Icon, Text } from "@chakra-ui/react";
-import { ColorModeButton } from "./ui/color-mode";
+import { ColorModeButton, useColorMode } from "./ui/color-mode";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
@@ -15,14 +15,20 @@ import {
 const Utils = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const { colorMode, setColorMode } = useColorMode();
 
   useEffect(() => {
+    if (colorMode !== "light") {
+      setColorMode("light");
+    }
+
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [colorMode, setColorMode]);
 
   const handleSignOut = async () => {
     try {
