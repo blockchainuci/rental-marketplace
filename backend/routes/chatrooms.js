@@ -36,7 +36,7 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", (message) => {
     console.log(message);
-    io.emit("receiveMessage", "This is a message"); // Broadcast to all clients
+    io.emit("receiveMessage", message); // Broadcast to all clients
   });
 
   socket.on("disconnect", () => {
