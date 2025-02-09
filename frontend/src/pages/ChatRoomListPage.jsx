@@ -7,6 +7,7 @@ const ChatRoomListPage = () => {
   const [chatRooms, setChatRooms] = useState([]);
   const [messages, setMessages] = useState([]);
   const [clientSocket, setClientSocket] = useState(null);
+  const [newMessageText, setNewMessageText] = useState("");
 
   useEffect(() => {
     const newSocket = io("ws://localhost:3002");
@@ -16,35 +17,40 @@ const ChatRoomListPage = () => {
       .then((data) => setChatRooms(data))
       .catch((err) => console.error("Error fetching chat rooms:", err));
 
+    newSocket.on("receiveMessage", text => {
+      console.log("Received a message");
+      console.log(text);
+      setMessages(prevMessages => [...prevMessages, text]);
+    })
     return () => {
+      newSocket.off("receiveMessage");
       newSocket.disconnect();
     }
   }, []);
 
-  const socket = io('ws://localhost:3001');
+  const updateNewMessage = (e) => {
+    setNewMessageText(e.target.value);
+  }
 
-  socket.on("receiveMessage", text => {
-    console.log(text);
-    setMessages([...messages, text]);
-  })
-
-  const handleSendMessage = () => {
-    socket.emit("sendMessage", "blankText");
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    clientSocket.emit("sendMessage", newMessageText);
   }
 
   return (
-    <VStack py={16} align="center">
-      <p>
-        {/* {chatRooms[0].id} */}
+    <VStack py={48} align="center">
+      <ul>
+        {messages.map((m, index) => (
+          <li key={index}>{m}</li>
+        ))}
+      </ul>
 
-        {messages.map((m) => {
-          <p>{m}</p>
-        })}
-      </p>
-
-      <button onClick={handleSendMessage}>
-        hello
-      </button>
+      <form onSubmit={handleSubmit}>
+        <VStack>
+          <input type="text" onChange={updateNewMessage}></input>
+          <button type="submit">Send</button>
+        </VStack>
+      </form>
     </VStack>
   )
 }
