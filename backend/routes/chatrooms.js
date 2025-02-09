@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 0; // 0 lets the OS assign an available port
+const PORT = 3002; // 0 lets the OS assign an available port
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${server.address().port}`);
