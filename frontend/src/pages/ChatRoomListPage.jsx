@@ -6,12 +6,19 @@ import { io } from 'socket.io-client';
 const ChatRoomListPage = () => {
   const [chatRooms, setChatRooms] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [clientSocket, setClientSocket] = useState(null);
 
   useEffect(() => {
+    const newSocket = io("ws://localhost:3002");
+    setClientSocket(newSocket);
     fetch("http://localhost:3001/chatrooms")
       .then((res) => res.json())
       .then((data) => setChatRooms(data))
       .catch((err) => console.error("Error fetching chat rooms:", err));
+
+    return () => {
+      newSocket.disconnect();
+    }
   }, []);
 
   const socket = io('ws://localhost:3001');
