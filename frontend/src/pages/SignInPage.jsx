@@ -1,8 +1,11 @@
-import { VStack, Text, Input, Button, Container, Link } from "@chakra-ui/react";
+import { VStack, Text, Input, Button, Container, Link, Flex } from "@chakra-ui/react";
 import { useState } from "react";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
+import { provider } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
 
 function SignInPage() {
   const [email, setEmail] = useState("");
@@ -17,7 +20,7 @@ function SignInPage() {
     setIsLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const result = await signInWithPopup(auth, provider);
       navigate("/");
     } catch (error) {
       console.error("Error signing in:", error);
@@ -42,44 +45,18 @@ function SignInPage() {
         </Text>
 
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <VStack spacing={4} w="full">
-            <VStack w="full" align="flex-start">
-              <Text>Email</Text>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-              />
-            </VStack>
+           
 
-            <VStack w="full" align="flex-start">
-              <Text>Password</Text>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
-              />
-              {error && (
-                <Text color="red.500" fontSize="sm">
-                  {error}
-                </Text>
-              )}
-            </VStack>
-
-            <Button
+        <Flex justify="center"><Button
               type="submit"
               colorScheme="blue"
               size="lg"
-              w="full"
+              maxW="20rem"
               isLoading={isLoading}
-            >
-              Sign In
-            </Button>
-          </VStack>
+            > <FcGoogle/>
+              Sign in with UCI
+            </Button></Flex>
+  
         </form>
 
         <hr style={{ width: "100%", margin: "1rem 0" }} />
