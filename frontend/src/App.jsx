@@ -17,6 +17,7 @@ import LedgerPage from "./pages/LedgerPage";
 import LearnPage from "./pages/LearnPage";
 import Utils from "./components/Utils";
 import ChatPage from "./pages/ChatPage"
+import EmailSending from './components/EmailTemplates/EmailSending';
 
 const App = () => {
   return (
@@ -73,6 +74,10 @@ const App = () => {
 
           {/* Add the new learn page route */}
           <Route path="/learn" element={<LearnPage />} />
+
+          {/* Simply for backend testing, feel free to modify/delete this component*/}
+          <Route path="/email-test" element={<EmailSending />} />
+
           <Route path="/utils" element={<Utils />} />
         </Routes>
 
