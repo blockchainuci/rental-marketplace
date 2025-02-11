@@ -1,10 +1,13 @@
-import { VStack, Text, Input, Button, Container, Link } from "@chakra-ui/react";
+import { VStack, Text, Input, Button, Container, Link, Flex } from "@chakra-ui/react";
 import { useState } from "react";
 import { auth } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getBearerToken } from "../contexts/AuthContext";
+import { FcGoogle } from "react-icons/fc";
+import { signInWithPopup } from "firebase/auth";
+import { provider } from "../firebase";
 
 function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -29,6 +32,8 @@ function SignUpPage() {
       // First, create the Firebase auth user
       await createUserWithEmailAndPassword(auth, email, password);
       const token = await getBearerToken();
+      const result = await signInWithPopup(auth, provider);
+
       // Then, add user to your database using axios
       await axios.post("http://localhost:3001/users", {
         email: email,
@@ -64,55 +69,17 @@ function SignUpPage() {
         </Text>
 
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <VStack spacing={4} w="full">
-            <VStack w="full" align="flex-start">
-              <Text>Email</Text>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-              />
-            </VStack>
 
-            <VStack w="full" align="flex-start">
-              <Text>Password</Text>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
-              />
-            </VStack>
-
-            <VStack w="full" align="flex-start">
-              <Text>Confirm Password</Text>
-              <Input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
-                required
-              />
-              {error && (
-                <Text color="red.500" fontSize="sm">
-                  {error}
-                </Text>
-              )}
-            </VStack>
-
-            <Button
+            <Flex justify="center"><Button
               type="submit"
               colorScheme="blue"
               size="lg"
-              w="full"
+              maxW="20rem"
               isLoading={isLoading}
             >
-              Sign Up
-            </Button>
-          </VStack>
+              <FcGoogle/>
+              Sign up with UCI
+            </Button></Flex>
         </form>
 
         <hr style={{ width: "100%", margin: "1rem 0" }} />
