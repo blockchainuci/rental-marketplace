@@ -12,6 +12,7 @@ import {
 import { useState, useEffect } from "react";
 import { auth } from "../firebase";
 import axios from "axios";
+import { getBearerToken } from "../contexts/AuthContext";
 
 function CheckoutPage() {
   const { id } = useParams();
@@ -75,17 +76,28 @@ function CheckoutPage() {
 
   const handleSubmitPayment = async () => {
     try {
+      const token = await getBearerToken();
       // First update the item with days_rented
       await axios.put(`http://localhost:3001/items/${id}`, {
         ...item, // Spread existing item properties
         days_rented: days, // Add the new days_rented value
         status: "Awaiting Pickup",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       // Then create renter record
       await axios.post("http://localhost:3001/renters", {
         item_id: parseInt(id),
         email: userEmail,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       // Navigate to confirmation page

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const OpenAI = require("openai");
+const middleware = require("../middleware");
 
 // Initialize OpenAI configuration
 const openai = new OpenAI({
@@ -9,7 +10,7 @@ const openai = new OpenAI({
 });
 
 // Create item with GPT-generated details using vision
-router.post("/", async (req, res) => {
+router.post("/", middleware.decodeToken, async (req, res) => {
   try {
     const {
       name,
@@ -182,7 +183,8 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update item
-router.put("/:id", async (req, res) => {
+
+router.put("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -217,7 +219,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete item
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query("DELETE FROM items WHERE id = $1", [id]);
@@ -229,7 +231,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Emission Calculator
-router.post("/emission-calculator", async (req, res) => {
+router.post("/emission-calculator", middleware.decodeToken, async (req, res) => {
   try {
     const {
       estimated_weight_kg,

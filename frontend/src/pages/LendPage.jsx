@@ -21,6 +21,7 @@ import {
   FaTree,
   FaEye,
 } from "react-icons/fa";
+import { getBearerToken } from "../contexts/AuthContext";
 
 function LendPage() {
   const [items, setItems] = useState([]);
@@ -83,10 +84,16 @@ function LendPage() {
   }, [userEmail]);
 
   const handlePickupConfirmation = async (itemId) => {
+    const token = await getBearerToken();
     try {
       await axios.put(`http://localhost:3001/lenders/${itemId}`, {
         is_picked_up: true,
         is_returned: false,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       // Navigate to waiting page
@@ -99,9 +106,15 @@ function LendPage() {
 
   const handleReturnConfirmation = async (itemId) => {
     try {
+      const token = await getBearerToken();
       await axios.put(`http://localhost:3001/lenders/${itemId}`, {
         is_picked_up: true,
         is_returned: true,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       // Navigate to waiting page

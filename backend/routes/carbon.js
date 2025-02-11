@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const middleware = require("../middleware");
 
 // Create carbon data
-router.post("/", async (req, res) => {
+router.post("/", middleware.decodeToken, async (req, res) => {
   try {
     const {
       item_id,
@@ -117,7 +118,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update carbon data
-router.put("/:id", async (req, res) => {
+router.put("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -171,7 +172,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete carbon data
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const deleteCarbon = await pool.query(
