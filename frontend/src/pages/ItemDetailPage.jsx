@@ -24,6 +24,7 @@ import {
   MdTimer,
   MdInventory,
   MdEmail,
+  MdCreate
 } from "react-icons/md";
 import { GiWeight } from "react-icons/gi";
 import { FaLeaf } from "react-icons/fa";
@@ -203,7 +204,7 @@ function ItemDetailPage() {
             bg="green.500"
             onClick={() => navigate(`/checkout/${id}`)}
             _hover={{ bg: "green.600" }}
-            isDisabled={isOwner}
+            disabled={isOwner ? true : false}
             title={isOwner ? "You cannot rent your own item" : ""}
           >
             <HStack spacing={2}>
@@ -211,23 +212,39 @@ function ItemDetailPage() {
               <Text>{isOwner ? "Your Item" : "Rent Now"}</Text>
             </HStack>
           </Button>
-          <Button
-            size="xl"
-            borderRadius={"lg"}
-            w="50%"
-            bg="blue.500"
-            onClick={() => navigate(`/chat/${id}`)}
-            _hover={{ bg: "blue.600" }}
-            isDisabled={isOwner}
-            title={isOwner ? "This is your item" : ""}
-          >
-            <HStack spacing={2}>
-              <Icon as={MdEmail} boxSize={5} />
-              <Text>
-                Message Lender
-              </Text>
-            </HStack>
-          </Button>
+
+          {isOwner ? (
+            <Button
+              size="xl"
+              borderRadius={"lg"}
+              w="50%"
+              bg="blue.500"
+              onClick={() => navigate(`/edit/${id}`)}
+              _hover={{ bg: "blue.600" }}
+              title={isOwner ? "This is your item" : ""}
+            >
+              <HStack spacing={2}>
+                <Icon as={MdCreate} boxSize={5} />
+                <Text>Edit Item</Text>
+              </HStack>
+            </Button>
+          ) : (
+            <Button
+              size="xl"
+              borderRadius={"lg"}
+              w="50%"
+              bg="blue.500"
+              onClick={() => navigate(`/chat/${id}`)}
+              _hover={{ bg: "blue.600" }}
+              isDisabled={isOwner}
+              title={isOwner ? "This is your item" : ""}
+            >
+              <HStack spacing={2}>
+                <Icon as={MdEmail} boxSize={5} />
+                <Text>Message Lender</Text>
+              </HStack>
+            </Button>
+          )}
         </Flex>
 
         <Box h="2px" bg="gray.200" my={4} />
