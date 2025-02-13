@@ -1,4 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { sendRentalEmail } from "../utils/emailService";
+
 import {
   Flex,
   Text,
@@ -100,6 +102,8 @@ function CheckoutPage() {
         },
       });
 
+      await sendRentalEmail(userEmail, item, days);
+    
       // Navigate to confirmation page
       navigate(`/checkout_confirmation/${id}`);
     } catch (error) {

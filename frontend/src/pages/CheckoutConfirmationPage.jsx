@@ -1,3 +1,7 @@
+import { useState } from "react"; 
+const [emailSent, setEmailSent] = useState(false);
+
+
 import {
   VStack,
   Text,
@@ -38,6 +42,7 @@ function CheckoutConfirmationPage() {
           `http://localhost:3001/lenders/${id}`
         );
         setLenderEmail(lenderResponse.data.email);
+        setEmailSent(true);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -114,6 +119,22 @@ function CheckoutConfirmationPage() {
                 </Text>
               </VStack>
             </Box>
+
+            {emailSent && (
+              <Box w="full" bg="white" p={4} borderRadius="lg" border="1px" borderColor="green.100">
+                <VStack align="start" spacing={3}>
+                  <HStack spacing={2}>
+                    <Icon as={MdEmail} color="green.500" boxSize={5} />
+                    <Text fontWeight="medium" color="gray.700">
+                      Email Notification Sent!
+                    </Text>
+                  </HStack>
+                  <Text color="gray.600" pl={7}>
+                    The lender has been notified about this rental request.
+                  </Text>
+                </VStack>
+              </Box>
+            )}
 
             <Box
               w="full"
