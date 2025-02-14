@@ -4,8 +4,6 @@ import {
   Input,
   Textarea,
   Button,
-  Grid,
-  Box,
   Image,
   Flex,
   HStack,
@@ -14,38 +12,15 @@ import {
   SimpleGrid,
   Spinner,
 } from "@chakra-ui/react";
-import { useState, useRef, useEffect } from "react";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useState, useEffect } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage, auth } from "../firebase";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getBearerToken } from "../contexts/AuthContext";
+
 function EditItemPage() {
-
-  // Todo: Check reconfigure this fetchData to fill in default fields
-  
-  /*
-  const fetchData = async () => {
-    try {
-      const itemResponse = await axios.get(`http://localhost:3001/items/${id}`);
-      setItem(itemResponse.data);
-
-      // Fetch lender email and check if current user is the owner
-      const lenderResponse = await axios.get(`http://localhost:3001/lenders/${id}`);
-      setLenderEmail(lenderResponse.data.email);
-      setIsOwner(lenderResponse.data.email === currentUserEmail);
-
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (id && currentUserEmail) {
-    fetchData();
-  }
-*/
+  const { id } = useParams();
   const [images, setImages] = useState([]);
   const [imageFiles, setImageFiles] = useState(Array(4).fill(null));
   const [name, setName] = useState("");
@@ -56,14 +31,48 @@ function EditItemPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
+  const [fetchLoading, setFetchLoading] = useState(true);
 
   const navigate = useNavigate();
-  const fileInputRefs = [
-    useRef(null),
-    useRef(null),
-    useRef(null),
-    useRef(null),
-  ];
+
+  
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/items/${id}`);
+        const item = response.data;
+        
+        //populate all fields with existing data so user knows what they're editing
+        setName(item.name);
+        setDescription(item.description);
+        setRentalFee(item.rental_fee.toString());
+        setCollateral(item.collateral.toString());
+        setDaysLimit(item.days_limit.toString());
+        setImages(item.images);
+      } catch (error) {
+        console.error("Error fetching item:", error);
+        alert("Error loading item data");
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchItem();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserEmail(user.email);
+      } else {
+        navigate("/signin");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
 
   const handleImageUpload = async (e) => {
     try {
@@ -79,46 +88,23 @@ function EditItemPage() {
       setImages((prevImages) => [...prevImages, ...uploadedUrls]);
     } catch (error) {
       console.error("Error uploading images:", error);
-      // Add error handling/notification here
     } finally {
       setUploading(false);
     }
   };
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserEmail(user.email);
-      } else {
-        // Redirect to login if no user is found
-        navigate("/signin");
-      }
-    });
-
-    // Cleanup subscription
-    return () => unsubscribe();
-  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
 
-      // Validate required fields
-      if (
-        !name ||
-        !description ||
-        !rentalFee ||
-        !collateral ||
-        !daysLimit ||
-        !userEmail
-      ) {
+      if (!name || !description || !rentalFee || !collateral || !daysLimit || !userEmail) {
         alert("Please fill in all required fields");
         return;
       }
+
       const token = await getBearerToken();
-      // Edit item in database with email
-      const response = await axios.put(`http://localhost:3001/items`, {
+      await axios.put(`http://localhost:3001/items/${id}`, {
         name,
         description,
         rental_fee: parseFloat(rentalFee),
@@ -127,50 +113,39 @@ function EditItemPage() {
         images,
         email: userEmail,
         status: "Listed",
-      },
-      {
+      }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      alert("Item edited successfully");
-      navigate(`/items/${response.data.id}`);
+      alert("Item updated successfully");
+      navigate(`/items/${id}`);
     } catch (error) {
-      console.error("Error editing item:", error);
-      alert("Failed to edit item. Please try again.");
+      console.error("Error updating item:", error);
+      alert("Failed to update item. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    return () => {
-      // Cleanup URLs when component unmounts
-      images.forEach((url) => {
-        if (url && url.startsWith("blob:")) {
-          URL.revokeObjectURL(url);
-        }
-      });
-    };
-  }, [images]);
+  if (fetchLoading) {
+    return (
+      <Flex justify="center" align="center" h="100vh">
+        <Spinner size="xl" />
+      </Flex>
+    );
+  }
 
+  //keeping it similar to the itemdetailpage.jsx styling
   return (
     <Container maxW="container.md" py={16}>
-      <VStack
-        spacing={8}
-        w="full"
-        bg="white"
-        p={8}
-        borderRadius="lg"
-        boxShadow="sm"
-      >
+      <VStack spacing={8} w="full" bg="white" p={8} borderRadius="lg" boxShadow="sm">
         <Heading size="lg" alignSelf="start">
-          List Item
+          Edit Item
         </Heading>
 
         <form onSubmit={handleSubmit}>
-          {/* Image Upload */}
           <VStack spacing={4} align="start" w="full">
             <Text fontWeight="medium">Images</Text>
             <Input
@@ -184,7 +159,6 @@ function EditItemPage() {
             {uploading && <Spinner size="sm" />}
           </VStack>
 
-          {/* Image Preview */}
           {images.length > 0 && (
             <SimpleGrid columns={[2, 3]} spacing={4} my={4}>
               {images.map((url, index) => (
@@ -200,10 +174,9 @@ function EditItemPage() {
             </SimpleGrid>
           )}
 
-          {/* Item Details */}
           <VStack spacing={6} w="full">
             <Input
-              placeholder="What are you selling?"
+              placeholder="Item name"
               size="lg"
               borderRadius="md"
               value={name}
@@ -211,7 +184,7 @@ function EditItemPage() {
               _placeholder={{ color: "gray.400" }}
             />
             <Textarea
-              placeholder="Describe your item (5+ words)"
+              placeholder="Item description"
               minH="120px"
               size="lg"
               borderRadius="md"
@@ -221,7 +194,6 @@ function EditItemPage() {
             />
           </VStack>
 
-          {/* Pricing Section */}
           <VStack spacing={6} w="full">
             <Text fontSize="xl" fontWeight="semibold" alignSelf="start">
               Pricing
@@ -231,7 +203,7 @@ function EditItemPage() {
               <Text color="gray.600">$</Text>
               <Input
                 type="number"
-                placeholder="Set your daily rate"
+                placeholder="Daily rate"
                 size="lg"
                 borderRadius="md"
                 value={rentalFee}
@@ -244,7 +216,7 @@ function EditItemPage() {
               <Text color="gray.600">$</Text>
               <Input
                 type="number"
-                placeholder="Set your Collateral"
+                placeholder="Collateral amount"
                 size="lg"
                 borderRadius="md"
                 value={collateral}
@@ -262,7 +234,6 @@ function EditItemPage() {
             />
           </VStack>
 
-          {/* Submit Button */}
           <Button
             type="submit"
             w="full"
@@ -277,7 +248,7 @@ function EditItemPage() {
               boxShadow: "md",
             }}
           >
-            Edit Item
+            Save Changes
           </Button>
 
           {isLoading && <Spinner color="blue" size="lg" />}
