@@ -183,7 +183,6 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update item
-
 router.put("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
