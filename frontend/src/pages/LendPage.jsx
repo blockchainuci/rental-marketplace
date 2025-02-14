@@ -137,8 +137,20 @@ function LendPage() {
       // Reload lender page
       window.location.reload();
     } catch (error) {
-      console.error("Error deleting item:", error);
-      alert("Failed to delete item. Please try again.");
+      console.error("Error deleting item from lender page:", error);
+      alert("Failed to delete item from lender page. Please try again.");
+    }
+    
+    try {
+      const token = await getBearerToken();
+      await axios.delete(`http://localhost:3001/items/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    } catch (error) {
+      console.error("Error deleting item from item page:", error);
+      alert("Failed to delete item from item page. Please try again.");
     }
   };
 
