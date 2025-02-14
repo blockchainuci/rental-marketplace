@@ -85,7 +85,7 @@ function EditItemPage() {
       });
 
       const uploadedUrls = await Promise.all(uploadPromises);
-      setImages((prevImages) => [...prevImages, ...uploadedUrls]);
+      setImages(uploadedUrls);
     } catch (error) {
       console.error("Error uploading images:", error);
     } finally {
