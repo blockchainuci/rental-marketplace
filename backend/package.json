@@ -7,8 +7,7 @@
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "openai": "^4.80.1",
-    "pg": "^8.13.1",
-    "react-html-email": "^3.0.0"
+    "pg": "^8.13.1"
   },
   "scripts": {
     "start": "nodemon server.js"

@@ -125,6 +125,35 @@ function LendPage() {
     }
   };
 
+  const handleDeleteItem = async (itemId) => {
+    try {
+      const token = await getBearerToken();
+      await axios.delete(`http://localhost:3001/lenders/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      // Reload lender page
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting item from lender page:", error);
+      alert("Failed to delete item from lender page. Please try again.");
+    }
+    
+    try {
+      const token = await getBearerToken();
+      await axios.delete(`http://localhost:3001/items/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    } catch (error) {
+      console.error("Error deleting item from item page:", error);
+      alert("Failed to delete item from item page. Please try again.");
+    }
+  };
+
   const getStatusButton = (status, itemId, itemName) => {
     switch (status) {
       case "Awaiting Pickup":
@@ -280,6 +309,16 @@ function LendPage() {
                 >
                   View Item
                 </Button>
+                {item.status === "Listed" && (<Button
+                    size="sm"
+                    leftIcon={<FaEye />}
+                    variant="outline"
+                    colorScheme="blue"
+                    onClick={() => handleDeleteItem(item.id)}
+                  >
+                    Delete Item
+                  </Button>
+                )}
               </HStack>
             </Box>
           </Flex>
