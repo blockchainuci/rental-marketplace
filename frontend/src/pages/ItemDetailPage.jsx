@@ -221,7 +221,8 @@ function ItemDetailPage() {
               bg="blue.500"
               onClick={() => navigate(`/edit/${id}`)}
               _hover={{ bg: "blue.600" }}
-              title={isOwner ? "This is your item" : ""}
+              disabled={item.status === "Listed" ? false : true}
+              title={"This is ued to edit your item"}
             >
               <HStack spacing={2}>
                 <Icon as={MdCreate} boxSize={5} />
@@ -236,8 +237,7 @@ function ItemDetailPage() {
               bg="blue.500"
               onClick={() => navigate(`/chat/${id}`)}
               _hover={{ bg: "blue.600" }}
-              isDisabled={isOwner}
-              title={isOwner ? "This is your item" : ""}
+              title={"This is used to message lender"}
             >
               <HStack spacing={2}>
                 <Icon as={MdEmail} boxSize={5} />
