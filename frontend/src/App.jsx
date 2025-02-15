@@ -18,6 +18,7 @@ import LearnPage from "./pages/LearnPage";
 import Utils from "./components/Utils";
 import ChatPage from "./pages/ChatPage"
 import EmailSending from './components/EmailTemplates/EmailSending';
+import MessagesPage from "./pages/MessagesPage";
 
 const App = () => {
   return (
@@ -35,6 +36,9 @@ const App = () => {
 
           {/* Route for the chat page */}
           <Route path="/chat/:id" element={<ChatPage />} />
+
+          {/* Updated: Route for the messages page */}
+          <Route path="/messages/:id" element={<MessagesPage />} />
           
           {/* Route for the checkout page */}
           <Route path="/checkout/:id" element={<CheckoutPage />} />
