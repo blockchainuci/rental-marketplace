@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { MdAdd, MdLogout, MdLogin, MdMessage } from "react-icons/md";
+import { MdAdd, MdLogout, MdLogin } from "react-icons/md";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -63,27 +63,15 @@ const Navbar = () => {
       px={4}
     >
       {/* Left Side */}
-      <HStack spacing={3}>
-        <NavButton 
-          icon={MdAdd} 
-          label="List Item" 
-          onClick={() => navigate("/list")} 
-          colorScheme="blue.600" 
-          color="white" 
+      <Box>
+        <NavButton
+          icon={MdAdd}
+          label="List Item"
+          onClick={() => navigate("/list")}
+          colorScheme="blue.600"
+          color="white"
         />
-        <NavButton  
-          icon={MdMessage} 
-          label="Messages" 
-          onClick={() => {
-            if (user) {
-              navigate(`/messages/${user.uid}`); // ✅ Navigate with user ID
-            } else {
-              navigate("/signin"); // Redirect to sign-in if not logged in
-            }
-          }} 
-          colorScheme="purple.400" 
-        />
-      </HStack>
+      </Box>
 
       {/* Center */}
       <Image
