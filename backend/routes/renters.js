@@ -6,6 +6,19 @@ const middleware = require("../middleware");
 router.post("/", middleware.decodeToken, async (req, res) => {
   try {
     const { item_id, email } = req.body;
+
+    // Check if record already exists
+    const existingRenter = await pool.query(
+      "SELECT * FROM Renter WHERE item_id = $1 AND email = $2",
+      [item_id, email]
+    );
+
+    if (existingRenter.rows.length > 0) {
+      // Return existing record instead of creating duplicate
+      return res.json(existingRenter.rows[0]);
+    }
+
+    // If no existing record, create new one
     const newRenter = await pool.query(
       "INSERT INTO Renter (item_id, is_picked_up, is_returned, email) VALUES($1, false, false, $2) RETURNING *",
       [item_id, email]

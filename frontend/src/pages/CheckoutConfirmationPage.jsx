@@ -1,6 +1,5 @@
-import { useState, useEffect} from "react"; 
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
 import {
   VStack,
   Text,
@@ -17,6 +16,7 @@ import {
   MdArrowBack,
 } from "react-icons/md";
 import axios from "axios";
+import { auth } from "../firebase";
 
 function CheckoutConfirmationPage() {
   const navigate = useNavigate();
@@ -25,31 +25,42 @@ function CheckoutConfirmationPage() {
   const [lenderEmail, setLenderEmail] = useState("");
   const [showEmail, setShowEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setCurrentUserEmail(user.email);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch item details
         const itemResponse = await axios.get(
           `http://localhost:3001/items/${id}`
         );
         setItem(itemResponse.data);
 
-        // Fetch lender email
         const lenderResponse = await axios.get(
           `http://localhost:3001/lenders/${id}`
         );
         setLenderEmail(lenderResponse.data.email);
+
+        // Remove the direct email sending from here since it's already handled in CheckoutPage
         setEmailSent(true);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    if (id) {
+    if (id && currentUserEmail) {
       fetchData();
     }
-  }, [id]);
+  }, [id, currentUserEmail]);
 
   const handleCopyEmail = async () => {
     try {
