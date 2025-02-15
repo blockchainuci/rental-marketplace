@@ -1,6 +1,5 @@
-import { useState } from "react"; 
-const [emailSent, setEmailSent] = useState(false);
-
+import { useState, useEffect} from "react"; 
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
   VStack,
@@ -17,8 +16,6 @@ import {
   MdCalendarToday,
   MdArrowBack,
 } from "react-icons/md";
-import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
 import axios from "axios";
 
 function CheckoutConfirmationPage() {
@@ -27,6 +24,7 @@ function CheckoutConfirmationPage() {
   const [item, setItem] = useState(null);
   const [lenderEmail, setLenderEmail] = useState("");
   const [showEmail, setShowEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
