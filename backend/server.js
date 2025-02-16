@@ -17,7 +17,7 @@ app.use("/lenders", require("./routes/lenders"));
 app.use("/renters", require("./routes/renters"));
 app.use("/users", require("./routes/users"));
 app.use("/carbon", require("./routes/carbon"));
-app.use("/email", require("./routes/nodeMailer")); // Add this line
+app.use("/email", require("./routes/nodeMailer"));
 
 app.get("/", async (req, res) => {
   try {

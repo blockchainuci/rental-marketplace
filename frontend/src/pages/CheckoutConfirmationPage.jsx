@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   VStack,
   Text,
@@ -13,9 +15,8 @@ import {
   MdCalendarToday,
   MdArrowBack,
 } from "react-icons/md";
-import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
 import axios from "axios";
+import { auth } from "../firebase";
 
 function CheckoutConfirmationPage() {
   const navigate = useNavigate();
@@ -23,30 +24,43 @@ function CheckoutConfirmationPage() {
   const [item, setItem] = useState(null);
   const [lenderEmail, setLenderEmail] = useState("");
   const [showEmail, setShowEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setCurrentUserEmail(user.email);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch item details
         const itemResponse = await axios.get(
           `http://localhost:3001/items/${id}`
         );
         setItem(itemResponse.data);
 
-        // Fetch lender email
         const lenderResponse = await axios.get(
           `http://localhost:3001/lenders/${id}`
         );
         setLenderEmail(lenderResponse.data.email);
+
+        // Remove the direct email sending from here since it's already handled in CheckoutPage
+        setEmailSent(true);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    if (id) {
+    if (id && currentUserEmail) {
       fetchData();
     }
-  }, [id]);
+  }, [id, currentUserEmail]);
 
   const handleCopyEmail = async () => {
     try {
@@ -114,6 +128,22 @@ function CheckoutConfirmationPage() {
                 </Text>
               </VStack>
             </Box>
+
+            {emailSent && (
+              <Box w="full" bg="white" p={4} borderRadius="lg" border="1px" borderColor="green.100">
+                <VStack align="start" spacing={3}>
+                  <HStack spacing={2}>
+                    <Icon as={MdEmail} color="green.500" boxSize={5} />
+                    <Text fontWeight="medium" color="gray.700">
+                      Email Notification Sent!
+                    </Text>
+                  </HStack>
+                  <Text color="gray.600" pl={7}>
+                    The lender has been notified about this rental request.
+                  </Text>
+                </VStack>
+              </Box>
+            )}
 
             <Box
               w="full"
