@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { MdAdd, MdLogout, MdLogin } from "react-icons/md";
+import { MdAdd, MdLogout, MdLogin, MdPerson } from "react-icons/md";
+import NavBarMenu from "./NavBarMenu";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -17,15 +18,6 @@ const Navbar = () => {
 
     return () => unsubscribe();
   }, []);
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      navigate("/");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
 
   const NavButton = ({
     icon,
@@ -48,6 +40,8 @@ const Navbar = () => {
     </Button>
   );
 
+
+
   return (
     <Flex
       as="nav"
@@ -68,8 +62,10 @@ const Navbar = () => {
           icon={MdAdd}
           label="List Item"
           onClick={() => navigate("/list")}
-          colorScheme="blue.600"
-          color="white"
+          colorScheme="blue.200"
+          color="black"
+          variant="ghost"
+          border="none"
         />
       </Box>
 
@@ -85,7 +81,7 @@ const Navbar = () => {
       {/* Right Side */}
       <Box>
         {user ? (
-          <NavButton icon={MdLogout} label="Sign Out" onClick={handleSignOut} />
+          <NavBarMenu/>
         ) : (
           <NavButton
             icon={MdLogin}
