@@ -20,7 +20,6 @@ import { storage, auth } from "../firebase";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getBearerToken } from "../contexts/AuthContext";
-import imageCompression from "browser-image-compression";
 function ListItemPage() {
   const [images, setImages] = useState([]);
   const [imageFiles, setImageFiles] = useState(Array(4).fill(null));
@@ -32,7 +31,6 @@ function ListItemPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
-  
 
   const navigate = useNavigate();
   const fileInputRefs = [
@@ -47,15 +45,8 @@ function ListItemPage() {
       setUploading(true);
       const files = Array.from(e.target.files);
       const uploadPromises = files.map(async (file) => {
-        const options = {
-          maxWidthOrHeight: 800,  // You can adjust based on your needs
-          useWebWorker: true,
-          fileType: 'image/jpeg',  // Convert to JPG format
-        };
-        const compressedFile = await imageCompression(file, options);
-  
         const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
-        const snapshot = await uploadBytes(storageRef, compressedFile);
+        const snapshot = await uploadBytes(storageRef, file);
         return getDownloadURL(snapshot.ref);
       });
 
@@ -68,7 +59,6 @@ function ListItemPage() {
       setUploading(false);
     }
   };
-
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
