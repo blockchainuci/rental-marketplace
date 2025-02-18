@@ -58,7 +58,6 @@ import {
         try {
             let unreadMessages = 0;
             for (const latestMessage of latestMessages) {
-                console.log(latestMessage)
                 if (!latestMessage.is_read && latestMessage.receiver_email == user.email) {
                     unreadMessages++;
                 }
