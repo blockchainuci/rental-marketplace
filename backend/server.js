@@ -18,6 +18,8 @@ app.use("/renters", require("./routes/renters"));
 app.use("/users", require("./routes/users"));
 app.use("/carbon", require("./routes/carbon"));
 app.use("/email", require("./routes/nodeMailer"));
+app.use("/messages", require("./routes/messages"));
+app.use("/conversations", require("./routes/conversations"));
 
 app.get("/", async (req, res) => {
   try {
