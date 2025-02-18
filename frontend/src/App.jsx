@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ListItemPage from "./pages/ListItemPage";
+import EditItemPage from "./pages/EditItemPage";
 import RentPage from "./pages/RentPage";
 import LendPage from "./pages/LendPage";
 import CheckoutConfirmationPage from "./pages/CheckoutConfirmationPage";
@@ -45,6 +46,9 @@ const App = () => {
 
           {/* Route for the list item page */}
           <Route path="/list" element={<ListItemPage />} />
+
+          {/* Route for the edit item page */}
+          <Route path="/edit/:id" element={<EditItemPage />} />
 
           {/* Route for the rent page */}
           <Route path="/rent" element={<RentPage />} />
