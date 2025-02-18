@@ -31,6 +31,7 @@ function ChatPage() {
   const [lenderID, setLenderID] = useState(null);
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
 
+  const HOT_BUTTON_MESSAGE = "Hi! Is the item still available for rent?"
   // TO DO: implement sockets with backend
   // const socket = io("http://localhost:3001"); // Replace with server URL
 
@@ -60,7 +61,7 @@ function ChatPage() {
 
 
   useEffect(() => {
-    if (messages) {
+    if (messages.length > 0) {
       // check if user has any unread messages and set them to read
       updateChatMessages();
     }
@@ -122,6 +123,17 @@ function ChatPage() {
     setSendButtonDisabled(false);
   };
 
+  const handleHotButtonClick = () => {
+    setNewMessage(HOT_BUTTON_MESSAGE);
+  };
+
+  useEffect(() => {
+    // send the hot button message when it's clicked
+    if (newMessage === HOT_BUTTON_MESSAGE) {
+      handleSendMessage(); 
+    }
+  }, [newMessage]);
+
   const updateUI = () => {
     const message = {
       text: newMessage,
@@ -139,7 +151,6 @@ function ChatPage() {
   const updateChatMessages = async () => {
     try {
       const response = await axios.get(`http://localhost:3001/messages/update_unread/${conversation_id}/${user.email}`);
-      console.log("update unread", response);
     } catch (error) {
       console.error("Error fetching item:", error);
     }
@@ -201,10 +212,12 @@ function ChatPage() {
         <Box w="full" p={4} borderBottom="1px solid #ccc" position="fixed" top={0} left={0} right={0} bg="white" zIndex={1}>
           <Flex gap={4} w="full" align="center">
             <Image src={conversation.images[0]} alt={conversation.name} boxSize="50px" objectFit="cover" borderRadius="md" />
-            <Text fontSize="xl" fontWeight="bold">Chat with Lender</Text>
+
+            <Text fontSize="xl" fontWeight="bold">{user.email === conversation.renter_email ? "Chat with the lender" : "Chat with the renter"}</Text>
           </Flex>
         </Box>
   
+
         {/* Chat Messages - Fills Remaining Space */}
         <Flex direction="column" flex="1" w="full" overflowY="auto" p={4} mt="80px">
           <VStack w="full" spacing={4} align="stretch">
@@ -237,12 +250,20 @@ function ChatPage() {
           <HStack w="full">
             <Input placeholder="Type your message..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
             <Button 
-            colorScheme="blue" 
+            variant="outline" color="blue.500" borderColor="blue.500" _hover={{ bg: "blue.50" }}
             onClick={handleSendMessage}
             disabled={sendButtonDisabled}>Send</Button>
           </HStack>
         </Box>
   
+        {messages.length == 0 && (
+
+        <Button variant="outline" color="blue.500" borderColor="blue.500" _hover={{ bg: "blue.50" }}
+        onClick={handleHotButtonClick}>
+          {HOT_BUTTON_MESSAGE}
+        </Button>
+        )}
+
         </Flex>
   
   
