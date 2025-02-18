@@ -1,4 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { sendRentalEmail } from "../utils/emailService";
+
 import {
   Flex,
   Text,
@@ -21,7 +23,7 @@ function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(1);
   const [userEmail, setUserEmail] = useState(null);
-  const walletAddress = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e";
+  // Removed unused walletAddress variable
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -77,30 +79,49 @@ function CheckoutPage() {
   const handleSubmitPayment = async () => {
     try {
       const token = await getBearerToken();
-      // First update the item with days_rented
+      
+      // Get lender's email first
+      const lenderResponse = await axios.get(
+        `http://localhost:3001/lenders/${id}`
+      );
+      
+      // Calculate totals
+      const rentalFee = item.rental_fee;
+      const totalRental = rentalFee * days;
+      const finalTotal = totalRental + item.collateral;
+
+      // Update item with days_rented
       await axios.put(`http://localhost:3001/items/${id}`, {
-        ...item, // Spread existing item properties
-        days_rented: days, // Add the new days_rented value
+        ...item,
+        days_rented: days,
         status: "Awaiting Pickup",
-      },
-      {
+      }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // Then create renter record
+      // Create renter record
       await axios.post("http://localhost:3001/renters", {
         item_id: parseInt(id),
         email: userEmail,
-      },
-      {
+      }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // Navigate to confirmation page
+      // Send emails with complete item data including lender email and calculated totals
+      await sendRentalEmail(userEmail, {
+        ...item,
+        lender_email: lenderResponse.data.email,
+        days_rented: days,
+        rental_fee: rentalFee,
+        total_rental: totalRental,
+        collateral: item.collateral,
+        final_total: finalTotal
+      }, days);
+    
       navigate(`/checkout_confirmation/${id}`);
     } catch (error) {
       console.error("Error processing payment:", error);
