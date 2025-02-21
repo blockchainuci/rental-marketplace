@@ -40,8 +40,6 @@ const Navbar = () => {
     </Button>
   );
 
-
-
   return (
     <Flex
       as="nav"
@@ -69,14 +67,16 @@ const Navbar = () => {
         />
       </Box>
 
-      {/* Center */}
-      <Image
-        src="/ih_logo.png"
-        alt="Logo"
-        h="70px"
-        cursor="pointer"
-        onClick={() => navigate("/")}
-      />
+      {/* Center - logo absolute positioning (i.e. 'hover' above the page and not rely on other boxes' positions)*/}
+      <Box position="absolute" left="50%" transform="translateX(-50%)">
+        <Image
+          src="/ih_logo.png"
+          alt="Logo"
+          h="70px"
+          cursor="pointer"
+          onClick={() => navigate("/")}
+        />
+      </Box>
 
       {/* Right Side */}
       <Box>
