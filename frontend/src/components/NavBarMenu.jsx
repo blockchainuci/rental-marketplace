@@ -20,6 +20,7 @@ import {
   MdBook,
   MdWallet
 } from "react-icons/md";
+import { useBreakpointValue } from "@chakra-ui/react";
 
 const NavBarMenu = () => {
   const navigate = useNavigate();
@@ -93,6 +94,7 @@ const NavBarMenu = () => {
   );
 
 
+  // Update just the MenuButton component
   const MenuButton = ({
     icon,
     label,
@@ -108,9 +110,11 @@ const NavBarMenu = () => {
       size="md"
       color={color}
       _hover={{ bg: `${colorScheme}.50` }}
+      minW={{ base: '40px', md: 'auto' }}
+      p={{ base: '2', md: '4' }}
     >
       <Box as={icon} boxSize={5}/>
-      {label}
+      {useBreakpointValue({ base: '', md: label })}
     </Button>
   );
 

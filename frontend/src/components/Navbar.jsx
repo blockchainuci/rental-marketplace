@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { MdAdd, MdLogout, MdLogin, MdPerson } from "react-icons/md";
 import NavBarMenu from "./NavBarMenu";
+import { useBreakpointValue } from "@chakra-ui/react";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -34,9 +35,12 @@ const Navbar = () => {
       size="md"
       color={color}
       _hover={{ bg: `${colorScheme}.50` }}
+      minW={{ base: '40px', md: 'auto' }}
+      p={{ base: '2', md: '4' }}
+      gap={2}
     >
       <Box as={icon} boxSize={5} />
-      {label}
+      {useBreakpointValue({ base: '', md: label })}
     </Button>
   );
 
@@ -52,10 +56,10 @@ const Navbar = () => {
       bg="white"
       boxShadow="md"
       h={16}
-      px={4}
+      px={{ base: 2, md: 4 }}
     >
       {/* Left Side */}
-      <Box>
+      <Box flex="0 1 auto">
         <NavButton
           icon={MdAdd}
           label="List Item"
@@ -67,8 +71,8 @@ const Navbar = () => {
         />
       </Box>
 
-      {/* Center - logo absolute positioning (i.e. 'hover' above the page and not rely on other boxes' positions)*/}
-      <Box position="absolute" left="50%" transform="translateX(-50%)">
+      {/* Center - logo stays centered */}
+      <Box position="absolute" left="50%" transform="translateX(-50%)" zIndex={2}>
         <Image
           src="/ih_logo.png"
           alt="Logo"
@@ -79,9 +83,15 @@ const Navbar = () => {
       </Box>
 
       {/* Right Side */}
-      <Box>
+      <Box 
+        flex="0 1 auto" 
+        maxW={{ base: '120px', md: '200px' }} 
+        overflow="hidden"
+        whiteSpace="nowrap"
+        textOverflow="ellipsis"
+      >
         {user ? (
-          <NavBarMenu/>
+          <NavBarMenu />
         ) : (
           <NavButton
             icon={MdLogin}
