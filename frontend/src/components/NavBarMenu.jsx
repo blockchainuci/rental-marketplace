@@ -20,17 +20,13 @@ import {
   MdBook,
   MdWallet
 } from "react-icons/md";
+import WalletButtons from "./WalletButtons";
+import MenuButton from "./ui/menu-button";
 
 const NavBarMenu = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-
-  // TO DO: get blockchain data
-  const [walletAddress, setWalletAddress] = useState("0x742d35Cc6634C0532925a3b844Bc454e4438f44e");
-  const [ethBalance, setEthBalance] = useState(0.00037);
-  const [priceOfOneEthereumInUSD, setPriceOfOneEthereumInUSD] = useState(2675.49);
-
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -93,26 +89,6 @@ const NavBarMenu = () => {
   );
 
 
-  const MenuButton = ({
-    icon,
-    label,
-    onClick,
-    colorScheme = "white",
-    color = "black",
-  }) => (
-    <Button
-      onClick={onClick}
-      bg={colorScheme}
-      variant="outline"
-      borderRadius="xl"
-      size="md"
-      color={color}
-      _hover={{ bg: `${colorScheme}.50` }}
-    >
-      <Box as={icon} boxSize={5}/>
-      {label}
-    </Button>
-  );
 
   if (!user) {
     return;
@@ -172,30 +148,18 @@ const NavBarMenu = () => {
           </Flex>
           <hr/>
 
-          <Flex
-          direction="column"
-          align="center">
-            <Flex   
-              align="center" 
-              gap={2}
-              justifyContent="center"
-              mt = "10vh">  
-              <MdWallet size={24} />
-              <Text>{walletAddress.replace(/^(.{3}).*(.{3})$/, "$1...$2")}</Text>
 
-            </Flex>
-            <Text>${Number(ethBalance*priceOfOneEthereumInUSD).toLocaleString(undefined, { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2
-              })}</Text>
-          </Flex>
+
+        <WalletButtons/>
+
+
 
 
           <Flex
             direction="column"
             gap={4}
             height="100vh"
-            mt="10vh">
+            mt="7vh">
             <hr/>
             <MenuButton icon={MdBook} label="Learn" onClick={handleLearnClick} />
             <MenuButton icon={MdLogout} label="Sign Out" onClick={handleSignOut} />
