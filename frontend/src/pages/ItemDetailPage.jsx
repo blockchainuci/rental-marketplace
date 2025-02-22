@@ -224,14 +224,21 @@ function ItemDetailPage() {
 
   return (
     <Flex direction="column" align="center" py={16} w="full" mb={10}>
+      <Box 
+        w="full" 
+        maxW={{ base: "100%", md: "80%", lg: "60%" }}  
+        px={{ base: "1rem", md: "3rem", lg: "6rem" }}  
+      >
       {/* Left side - Images */}
-      <Flex>
-        <ImageCarousel images={item.images} />
+      <Flex justify="center" w="full">
+        <Box maxW={{ base: "100%", md: "80%", lg: "60%" }} w="full">
+          <ImageCarousel images={item.images} />
+        </Box>
       </Flex>
 
       {/* Right side - Item details */}
-      <Flex direction="column" w="full" px={3}>
-        <Text fontSize="3xl" fontWeight="bold">
+      <Flex direction="column" w="full" align="center">
+        <Text fontSize="3xl" fontWeight="bold" textAlign="center">
           {item.name}
         </Text>
 
@@ -244,11 +251,11 @@ function ItemDetailPage() {
           </Text>
         </Flex>
 
-        <Flex justifyContent={"center"} gap={2} mt={4}>
+        <Flex justifyContent={"center"} flexWrap="wrap" gap={2} mt={4}  w={{ base: "100%", md: "80%", lg: "60%" }}>
           <Button
-            size="xl"
-            borderRadius={"lg"}
-            w="50%"
+            size="lg"
+            borderRadius={"md"}
+            w={{ base: "100%", md: "48%" }}
             bg="green.500"
             onClick={() => navigate(`/checkout/${id}`)}
             _hover={{ bg: "green.600" }}
@@ -563,6 +570,7 @@ function ItemDetailPage() {
           </>
         )}
       </Flex>
+      </Box>
     </Flex>
   );
 }
