@@ -20,11 +20,16 @@ import {
   MdBook,
   MdWallet
 } from "react-icons/md";
+import { useBreakpointValue } from "@chakra-ui/react";
 
 const NavBarMenu = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  
+  // Move all breakpoint values to the top
+  const menuWidth = useBreakpointValue({ base: '80vw', sm: '60vw', md: '40vw', lg: '30vw' });
+  const buttonLabel = useBreakpointValue({ base: '', md: user?.email?.replace(/@.*/, "") });
 
   // TO DO: get blockchain data
   const [walletAddress, setWalletAddress] = useState("0x742d35Cc6634C0532925a3b844Bc454e4438f44e");
@@ -93,6 +98,8 @@ const NavBarMenu = () => {
   );
 
 
+  // Update just the MenuButton component
+  // Update MenuButton to receive label directly
   const MenuButton = ({
     icon,
     label,
@@ -104,12 +111,14 @@ const NavBarMenu = () => {
       onClick={onClick}
       bg={colorScheme}
       variant="outline"
-      borderRadius="xl"
-      size="md"
+      borderRadius="lg"
+      size={useBreakpointValue({ base: 'sm', md: 'md'})}
       color={color}
       _hover={{ bg: `${colorScheme}.50` }}
+      minW={{ base: '35px', md: 'auto' }}
+      p={{ base: '1', md: '3' }}
     >
-      <Box as={icon} boxSize={5}/>
+      <Box as={icon} boxSize={4}/>
       {label}
     </Button>
   );
@@ -121,8 +130,12 @@ const NavBarMenu = () => {
   return (
     <>
       {/* Button to toggle the menu */}
-      <MenuButton icon={MdPerson} label={user.email.replace(/@.*/, "")} onClick={handleMenuClick} />
-
+      <MenuButton 
+        icon={MdPerson} 
+        label={buttonLabel} 
+        onClick={handleMenuClick} 
+      />
+      
       {/* Overlay that closes the menu when clicked */}
       {isOpen && (
         <Box
@@ -142,14 +155,13 @@ const NavBarMenu = () => {
         top="0"
         right="0"
         height="100vh"
-        width="40vw"
+        width={menuWidth}
         bg="white"
         boxShadow="xl"
         transition="transform 0.3s ease-in-out"
         transform={isOpen ? "translateX(0)" : "translateX(100%)"}
         zIndex={20} // Ensures menu is above overlay
       >
-
 
         <IconButton
           icon={MdClose}
