@@ -207,9 +207,9 @@ function ChatPage() {
     );
   } else {
     return (
-      <Flex direction="column" h="100vh" overflow="hidden">
+      <Flex direction="column" h="100vh" overflow="hidden" align="center">
         {/* Fixed Header */}
-        <Box w="full" p={4} borderBottom="1px solid #ccc" position="fixed" top={0} left={0} right={0} bg="white" zIndex={1}>
+        <Box w="full" p={4} borderBottom="1px solid #ccc" position="fixed" top={0} left={0} right={0} bg="white">
           <Flex gap={4} w="full" align="center">
             <Image src={conversation.images[0]} alt={conversation.name} boxSize="50px" objectFit="cover" borderRadius="md" />
 
@@ -222,7 +222,7 @@ function ChatPage() {
         <Flex direction="column" flex="1" w="full" overflowY="auto" p={4} mt="80px">
           <VStack w="full" spacing={4} align="stretch">
             {messages.map((msg) => (
-              <Flex key={msg.id} justify={msg.sender_email === user.email ? "flex-end" : "flex-start"} w="full">
+              <Flex key={msg.id} justify={msg.sender_email === user.email ? "flex-end" : "flex-start"} w="full" maxW="85%" alignSelf={msg.sender_email === user.email ? "flex-end" : "flex-start"}>
                 <Box p={3} borderRadius="md" bg={msg.sender_email === user.email ? "blue.500" : "gray.200"} color={msg.sender_email === user.email ? "white" : "black"}>
                   <Text fontSize="sm">{msg.text}</Text>
                   <Text fontSize="xs" color={msg.sender_email === user.email ? "gray.300" : "gray.500"}>
