@@ -12,7 +12,7 @@ import {
     MdDownload
   } from "react-icons/md";
 import MenuButton from "./ui/menu-button";
-import getBalance from "../utils/getBalance.js";
+import { getUserUSDCBalance } from "../wallet/wallet.js";
 
 function WalletButton() {
     const [account, setAccount] = useState(null);
@@ -25,7 +25,6 @@ function WalletButton() {
                 const accounts = await connectWallet();
                 if (accounts && accounts.length > 0) {
                     setAccount(accounts[0]); // Set the first account
-                    console.log("Auto-connected to:", accounts[0]);
                 }
             } catch (error) {
                 console.error("Auto-connect error:", error);
@@ -36,11 +35,10 @@ function WalletButton() {
 
     useEffect(() => {
         if (account) {
-            console.log("Getting balance for account:", account);
 
             // Define an async function inside useEffect
             const fetchBalance = async () => {
-                const balance = await getBalance(account);
+                const balance = await getUserUSDCBalance();
                 setUsdcBaseBalance(balance);
             };
 
