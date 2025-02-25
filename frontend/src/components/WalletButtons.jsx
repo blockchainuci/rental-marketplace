@@ -12,14 +12,12 @@ import {
     MdDownload
   } from "react-icons/md";
 import MenuButton from "./ui/menu-button";
+import getBalance from "../utils/getBalance.js";
 
 function WalletButton() {
-    const [account, setAccount] = useState(false);
+    const [account, setAccount] = useState(null);
 
-      // TO DO: get blockchain data
-      const [ethBalance, setEthBalance] = useState(0.0);
-      const [priceOfOneEthereumInUSD, setPriceOfOneEthereumInUSD] = useState(2675.49);
-
+      const [usdcBaseBalance, setUsdcBaseBalance] = useState(0.0);
 
       useEffect(() => {
         async function autoConnectWallet() {
@@ -35,6 +33,20 @@ function WalletButton() {
         }
         autoConnectWallet();
     }, []); 
+
+    useEffect(() => {
+        if (account) {
+            console.log("Getting balance for account:", account);
+
+            // Define an async function inside useEffect
+            const fetchBalance = async () => {
+                const balance = await getBalance(account);
+                setUsdcBaseBalance(balance);
+            };
+
+            fetchBalance(); // Call the async function
+        }
+    }, [account]);
 
     const handleConnect = async () => {
         const accounts = await connectWallet();
@@ -67,7 +79,7 @@ function WalletButton() {
                             <Text>{account.replace(/^(.{3}).*(.{3})$/, "$1...$2")}</Text>
                         </Flex>
                     
-                            <Text>${Number(ethBalance*priceOfOneEthereumInUSD).toLocaleString(undefined, { 
+                            <Text>${Number(usdcBaseBalance).toLocaleString(undefined, { 
                                 minimumFractionDigits: 2, 
                                 maximumFractionDigits: 2
                             })}</Text>
