@@ -46,29 +46,39 @@ function ListItemPage() {
     try {
       setUploading(true);
       const files = Array.from(e.target.files);
-      const uploadPromises = files.map(async (file) => {
-        const options = {
-          maxWidthOrHeight: 800,  // You can adjust based on your needs
-          useWebWorker: true,
-          fileType: 'image/jpeg',  // Convert to JPG format
-        };
-        const compressedFile = await imageCompression(file, options);
   
-        const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
-        const snapshot = await uploadBytes(storageRef, compressedFile);
-        return getDownloadURL(snapshot.ref);
+      const uploadPromises = files.map(async (file) => {
+        console.log("Original File Size:", file.size / 1024, "KB");
+  
+        const options = {
+          maxSizeMB: 0.5,  // Ensures max size ~500KB
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+          fileType: 'image/jpeg',
+        };
+  
+        try {
+          const compressedFile = await imageCompression(file, options);
+          console.log("Compressed File Size:", compressedFile.size / 1024, "KB");
+  
+          const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
+          const snapshot = await uploadBytes(storageRef, compressedFile);
+          return getDownloadURL(snapshot.ref);
+        } catch (compressionError) {
+          console.error("Image compression failed:", compressionError);
+          return null; // Handle errors gracefully
+        }
       });
-
-      const uploadedUrls = await Promise.all(uploadPromises);
+  
+      const uploadedUrls = (await Promise.all(uploadPromises)).filter(url => url);
       setImages((prevImages) => [...prevImages, ...uploadedUrls]);
     } catch (error) {
       console.error("Error uploading images:", error);
-      // Add error handling/notification here
     } finally {
       setUploading(false);
     }
   };
-
+  
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
