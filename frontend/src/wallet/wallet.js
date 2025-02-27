@@ -21,7 +21,6 @@ export const provider = sdk.getProvider();
 export const connectWallet = async () => {
     try {
         const addresses = await provider.request({ method: 'eth_requestAccounts' });
-        console.log("Connected accounts:", addresses);
         return addresses;
     } catch (error) {
         console.error("Wallet connection failed:", error);
@@ -46,7 +45,6 @@ export const getWallet = async () => {
             sdk: sdk, // Optional: return the SDK instance if needed
         };
 
-        console.log("Wallet connected:", wallet);
         return wallet;
     } catch (error) {
         console.error("Wallet connection failed:", error);
@@ -129,6 +127,29 @@ export const getUserUSDCBalance = async () => {
         return formattedBalance;
     } catch (error) {
         console.error("Error fetching USDC balance:", error);
+        return null;
+    }
+};
+
+export const getTransactions = async (address) => {
+    try {
+        // Base Sepolia Block Explorer API (BaseScan)
+        const BASESCAN_API_KEY = process.env.REACT_APP_BASE_SCAN_API_KEY; // Replace with your actual API key
+
+        // Use `tokentx` instead of `txlist` to get ERC-20 transactions (like USDC)
+        const BASESCAN_API_URL = `https://api-sepolia.basescan.org/api?module=account&action=tokentx&address=${address}&sort=desc&apikey=${BASESCAN_API_KEY}`;
+
+        // Fetch transactions from BaseScan
+        const response = await fetch(BASESCAN_API_URL);
+        const data = await response.json();
+
+        if (data.status !== "1") {
+            throw new Error("Failed to fetch transactions or no transactions found.");
+        }
+
+        return data.result; // Returns an array of token transactions
+    } catch (error) {
+        console.error("Error fetching transactions:", error);
         return null;
     }
 };

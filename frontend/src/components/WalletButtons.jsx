@@ -9,16 +9,19 @@ import {
   import {
     MdWallet,
     MdUpload,
-    MdDownload
+    MdDownload,
+    MdList
   } from "react-icons/md";
 import MenuButton from "./ui/menu-button";
 import { getUserUSDCBalance } from "../wallet/wallet.js";
+import { useNavigate } from "react-router-dom";
 
 function WalletButton() {
     const [account, setAccount] = useState(null);
 
       const [usdcBaseBalance, setUsdcBaseBalance] = useState(0.0);
-
+      const navigate = useNavigate();
+      
       useEffect(() => {
         async function autoConnectWallet() {
             try {
@@ -51,6 +54,10 @@ function WalletButton() {
         if (accounts && accounts.length > 0) {
             setAccount(accounts[0]); // Set the first account
         }
+    };
+
+    const handleTransactionsClick = () => {
+        navigate("/transactions");
     };
 
     const handleDepositClick = () => {
@@ -89,6 +96,7 @@ function WalletButton() {
                                 mt={4}>
                                   <MenuButton icon={MdDownload} label="Deposit" onClick={handleDepositClick} />
                                   <MenuButton icon={MdUpload} label="Withdraw" onClick={handleWithdrawClick} />
+                                  <MenuButton icon={MdList} label="Transactions" onClick={handleTransactionsClick} />
                             </Flex>
                     </Flex>
                 </div>

@@ -20,6 +20,8 @@ import { storage, auth } from "../firebase";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getBearerToken } from "../contexts/AuthContext";
+import { connectWallet } from "../wallet/wallet.js";
+
 function ListItemPage() {
   const [images, setImages] = useState([]);
   const [imageFiles, setImageFiles] = useState(Array(4).fill(null));
@@ -31,6 +33,21 @@ function ListItemPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
+  const [publicKey, setPublicKey] = useState(null);
+      
+  useEffect(() => {
+    async function autoConnectWallet() {
+        try {
+            const accounts = await connectWallet();
+            if (accounts && accounts.length > 0) {
+              setPublicKey(accounts[0]); // Set the first account
+            }
+        } catch (error) {
+            console.error("Auto-connect error:", error);
+        }
+    }
+  autoConnectWallet();
+  }, []); 
 
   const navigate = useNavigate();
   const fileInputRefs = [
@@ -81,6 +98,12 @@ function ListItemPage() {
 
       // Validate required fields
       if (
+        !publicKey
+      ) {
+        alert("Please connect a wallet");
+        return;
+      }
+      if (
         !name ||
         !description ||
         !rentalFee ||
@@ -102,6 +125,7 @@ function ListItemPage() {
         images,
         email: userEmail,
         status: "Listed",
+        public_key: publicKey
       },
       {
         headers: {
