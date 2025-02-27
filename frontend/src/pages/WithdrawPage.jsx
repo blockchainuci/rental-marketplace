@@ -1,4 +1,3 @@
-import { chakra } from "@chakra-ui/react";
 import {
     Box,
     Container,
@@ -7,9 +6,7 @@ import {
     Button,
     VStack,
     Image,
-    FormControl,
-    FormErrorMessage,
-    Flex
+    Flex,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -76,7 +73,7 @@ const WithdrawPage = () => {
             setErrorMessage("");
         } else if (!validateAddress(address)) {
             setIsValidAddress(false);
-            setErrorMessage("Invalid Base address. Please enter a valid Base address.");
+            setErrorMessage("Please enter a valid Base address starting with '0x' followed by 40 hexadecimal characters.");
         } else {
             setIsValidAddress(true);
             setErrorMessage("");
@@ -125,16 +122,25 @@ const WithdrawPage = () => {
                     </Text>
                 </Box>
 
-                <FormControl isInvalid={!isValidAddress}>
+                <Box position="relative">
                     <Input
-                        type="Enter Base network address"
-                        placeholder="Recipient Address"
+                        type="text"
+                        placeholder="Recipient Address (0x...)"
                         value={recipientAddress}
                         onChange={handleAddressChange}
                         size={buttonSize}
+                        borderColor={!isValidAddress ? "red.500" : recipientAddress ? "green.500" : "inherit"}
+                        _hover={{ borderColor: !isValidAddress ? "red.600" : recipientAddress ? "green.600" : "inherit" }}
+                        _focus={{ borderColor: !isValidAddress ? "red.500" : recipientAddress ? "green.500" : "blue.500" }}
                     />
-                    <FormErrorMessage>{errorMessage}</FormErrorMessage>
-                </FormControl>
+                    <Text 
+                        color={!isValidAddress ? "red.500" : recipientAddress ? "green.500" : "gray.500"} 
+                        fontSize="sm" 
+                        mt={1}
+                    >
+                        {errorMessage || (recipientAddress && "Valid Base address")}
+                    </Text>
+                </Box>
 
                 <Button
                     colorScheme="blue"
@@ -148,3 +154,5 @@ const WithdrawPage = () => {
         </Container>
     );
 };
+
+export default WithdrawPage;
