@@ -21,6 +21,8 @@ import {
   MdWallet
 } from "react-icons/md";
 import { useBreakpointValue } from "@chakra-ui/react";
+import WalletButtons from "./WalletButtons";
+import MenuButton from "./ui/menu-button";
 
 const NavBarMenu = () => {
   const navigate = useNavigate();
@@ -30,12 +32,6 @@ const NavBarMenu = () => {
   // Move all breakpoint values to the top
   const menuWidth = useBreakpointValue({ base: '80vw', sm: '60vw', md: '40vw', lg: '30vw' });
   const buttonLabel = useBreakpointValue({ base: '', md: user?.email?.replace(/@.*/, "") });
-
-  // TO DO: get blockchain data
-  const [walletAddress, setWalletAddress] = useState("0x742d35Cc6634C0532925a3b844Bc454e4438f44e");
-  const [ethBalance, setEthBalance] = useState(0.00037);
-  const [priceOfOneEthereumInUSD, setPriceOfOneEthereumInUSD] = useState(2675.49);
-
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -96,7 +92,6 @@ const NavBarMenu = () => {
       {label}
     </Button>
   );
-
 
   // Update just the MenuButton component
   // Update MenuButton to receive label directly
@@ -184,30 +179,18 @@ const NavBarMenu = () => {
           </Flex>
           <hr/>
 
-          <Flex
-          direction="column"
-          align="center">
-            <Flex   
-              align="center" 
-              gap={2}
-              justifyContent="center"
-              mt = "10vh">  
-              <MdWallet size={24} />
-              <Text>{walletAddress.replace(/^(.{3}).*(.{3})$/, "$1...$2")}</Text>
 
-            </Flex>
-            <Text>${Number(ethBalance*priceOfOneEthereumInUSD).toLocaleString(undefined, { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2
-              })}</Text>
-          </Flex>
+
+        <WalletButtons/>
+
+
 
 
           <Flex
             direction="column"
             gap={4}
             height="100vh"
-            mt="10vh">
+            mt="7vh">
             <hr/>
             <MenuButton icon={MdBook} label="Learn" onClick={handleLearnClick} />
             <MenuButton icon={MdLogout} label="Sign Out" onClick={handleSignOut} />

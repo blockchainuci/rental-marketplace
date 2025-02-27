@@ -37,8 +37,7 @@ function SignUpPage() {
 
       // Then, add user to your database using axios
       await axios.post("http://localhost:3001/users", {
-        email: email,
-        wallet_address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e", // Hard-coded wallet address
+        email: email
       },
       {
         headers: {

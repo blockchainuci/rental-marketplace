@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { sendRentalEmail } from "../utils/emailService";
-
+import { connectWallet } from "../wallet/wallet.js";
 import {
   Flex,
   Text,
@@ -15,6 +15,8 @@ import { useState, useEffect } from "react";
 import { auth } from "../firebase";
 import axios from "axios";
 import { getBearerToken } from "../contexts/AuthContext";
+import { sendUSDCGasless } from "../wallet/wallet.js";
+import { getUserUSDCBalance } from "../wallet/wallet.js";
 
 function CheckoutPage() {
   const { id } = useParams();
@@ -23,7 +25,21 @@ function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(1);
   const [userEmail, setUserEmail] = useState(null);
-  // Removed unused walletAddress variable
+  const [publicKey, setPublicKey] = useState(null);
+      
+  useEffect(() => {
+    async function autoConnectWallet() {
+        try {
+            const accounts = await connectWallet();
+            if (accounts && accounts.length > 0) {
+              setPublicKey(accounts[0]); // Set the first account
+            }
+        } catch (error) {
+            console.error("Auto-connect error:", error);
+        }
+    }
+  autoConnectWallet();
+  }, []); 
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -77,6 +93,23 @@ function CheckoutPage() {
   };
 
   const handleSubmitPayment = async () => {
+
+    if (!publicKey) {
+      alert("Please connect a wallet.");
+      return;
+    }
+
+    // Calculate totals
+    const rentalFee = item.rental_fee;
+    const totalRental = rentalFee * days;
+    const finalTotal = totalRental + item.collateral;
+
+    const txComplete = await escrowDepositSuccess(finalTotal);
+
+    if (!txComplete) {
+      return;
+    }
+
     try {
       const token = await getBearerToken();
       
@@ -84,11 +117,6 @@ function CheckoutPage() {
       const lenderResponse = await axios.get(
         `http://localhost:3001/lenders/${id}`
       );
-      
-      // Calculate totals
-      const rentalFee = item.rental_fee;
-      const totalRental = rentalFee * days;
-      const finalTotal = totalRental + item.collateral;
 
       // Update item with days_rented
       await axios.put(`http://localhost:3001/items/${id}`, {
@@ -105,6 +133,7 @@ function CheckoutPage() {
       await axios.post("http://localhost:3001/renters", {
         item_id: parseInt(id),
         email: userEmail,
+        public_key: publicKey
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -125,9 +154,31 @@ function CheckoutPage() {
       navigate(`/checkout_confirmation/${id}`);
     } catch (error) {
       console.error("Error processing payment:", error);
-      alert("Failed to process payment. Please try again.");
+      alert("Failed to process payment. This renter probably did not set up their account.");
+      // TO DO: send escrow back to the renter immediatley
     }
   };
+
+  const escrowDepositSuccess = async (finalTotal) => {
+    const usdcBalance = await getUserUSDCBalance();
+
+    if (finalTotal > usdcBalance) {
+      // TO DO: ask if they want to go to the deposit page
+      alert(`Insufficient balance. You have $${usdcBalance} but need $${finalTotal}`);
+      return false;
+    }
+
+    const transaction = await sendUSDCGasless(finalTotal);
+
+    if (transaction.code == 4001) {
+      return; // user cancelled
+    } else if (transaction.code) {
+      console.error(`${transaction.code}`)
+      alert(`${transaction.message}`);
+    } else {
+      return true;
+    }
+  }
 
   return (
     <Flex

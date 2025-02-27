@@ -1,14 +1,15 @@
 const router = require("express").Router();
 const pool = require("../db");
 const middleware = require("../middleware");
+const serverTransaction = require("../functions/server_transaction");
 
 // Create lender record
 router.post("/", middleware.decodeToken, async (req, res) => {
   try {
-    const { item_id, email } = req.body;
+    const { item_id, email, public_key } = req.body;
     const newLender = await pool.query(
-      "INSERT INTO Lender (item_id, is_picked_up, is_returned, email) VALUES($1, false, false, $2) RETURNING *",
-      [item_id, email]
+      "INSERT INTO Lender (item_id, is_picked_up, is_returned, email, public_key) VALUES($1, false, false, $2, $3) RETURNING *",
+      [item_id, email, public_key]
     );
     res.json(newLender.rows[0]);
   } catch (err) {
@@ -81,10 +82,17 @@ router.put("/:item_id", middleware.decodeToken, async (req, res) => {
 
       // Check if both lender and renter have picked up or returned
       const checkStatus = await client.query(
-        `SELECT r.is_picked_up as renter_picked_up, l.is_picked_up as lender_picked_up,
-                r.is_returned as renter_returned, l.is_returned as lender_returned
-         FROM renter r, lender l 
-         WHERE r.item_id = $1 AND l.item_id = $1`,
+        `SELECT r.is_picked_up as renter_picked_up, 
+                l.is_picked_up as lender_picked_up, 
+                r.public_key as renter_public_key,
+                l.public_key as lender_public_key,
+                r.is_returned as renter_returned, 
+                l.is_returned as lender_returned,
+                i.rental_fee as rental_fee,
+                i.days_rented as days_rented,
+                i.collateral as collateral
+         FROM renter r, lender l, items i
+         WHERE r.item_id = $1 AND l.item_id = $1 AND i.id = $1`,
         [item_id]
       );
 
@@ -94,10 +102,26 @@ router.put("/:item_id", middleware.decodeToken, async (req, res) => {
         checkStatus.rows[0]?.lender_picked_up
       ) {
         // Update item status to "Renting" when both picked up
-        await client.query(
-          "UPDATE items SET status = 'Renting' WHERE id = $1",
-          [item_id]
-        );
+        if (checkStatus.rows[0]?.lender_public_key) {
+
+          await client.query(
+            "UPDATE items SET status = 'Renting' WHERE id = $1",
+            [item_id]
+          );
+
+          if (!checkStatus.rows[0]?.renter_returned && !checkStatus.rows[0]?.lender_returned) {
+            // Send rental fee to lender
+            console.log('Send fee to lender')
+            const totalFee = checkStatus.rows[0]?.rental_fee * checkStatus.rows[0]?.days_rented;
+            serverTransaction(checkStatus.rows[0]?.lender_public_key, totalFee);
+          }
+          
+          // TO DO: send receipt in an email to both people
+
+
+        } else {
+          throw 'Error no lender public key';
+        }
       }
       if (
         is_returned &&
@@ -109,6 +133,12 @@ router.put("/:item_id", middleware.decodeToken, async (req, res) => {
           "UPDATE items SET status = 'Returned' WHERE id = $1",
           [item_id]
         );
+
+        // Send collateral back to renter
+        serverTransaction(checkStatus.rows[0]?.renter_public_key, checkStatus.rows[0]?.collateral);
+        console.log('Sending collateral to renter')
+        // TO DO: send receipt in an email to the renter
+
       }
 
       await client.query("COMMIT");

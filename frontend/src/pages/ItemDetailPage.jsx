@@ -286,21 +286,6 @@ function ItemDetailPage() {
             </Button>
           ) : (
             <Button
-              size="xl"
-              borderRadius={"lg"}
-              w="50%"
-              bg="blue.500"
-              onClick={() => navigate(`/chat/${id}`)}
-              _hover={{ bg: "blue.600" }}
-              title={"This is used to message lender"}
-            >
-              <HStack spacing={2}>
-                <Icon as={MdEmail} boxSize={5} />
-                <Text>Message Lender</Text>
-              </HStack>
-            </Button>
-          )}
-          <Button
             size="xl"
             borderRadius={"lg"}
             w="50%"
@@ -317,6 +302,7 @@ function ItemDetailPage() {
               </Text>
             </HStack>
           </Button>
+          )}
         </Flex>
 
         <Box h="2px" bg="gray.200" my={4} />
