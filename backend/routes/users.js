@@ -5,10 +5,10 @@ const middleware = require("../middleware");
 // Create user
 router.post("/", middleware.decodeToken, async (req, res) => {
   try {
-    const { email, wallet_address } = req.body;
+    const { email } = req.body;
     const newUser = await pool.query(
-      "INSERT INTO Users (email, wallet_address) VALUES($1, $2) RETURNING *",
-      [email, wallet_address]
+      "INSERT INTO Users (email) VALUES($1) RETURNING *",
+      [email]
     );
     res.json(newUser.rows[0]);
   } catch (err) {

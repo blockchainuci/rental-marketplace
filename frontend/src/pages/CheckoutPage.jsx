@@ -25,14 +25,14 @@ function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(1);
   const [userEmail, setUserEmail] = useState(null);
-  const [account, setAccount] = useState(null);
+  const [publicKey, setPublicKey] = useState(null);
       
   useEffect(() => {
     async function autoConnectWallet() {
         try {
             const accounts = await connectWallet();
             if (accounts && accounts.length > 0) {
-                setAccount(accounts[0]); // Set the first account
+              setPublicKey(accounts[0]); // Set the first account
             }
         } catch (error) {
             console.error("Auto-connect error:", error);
@@ -94,7 +94,7 @@ function CheckoutPage() {
 
   const handleSubmitPayment = async () => {
 
-    if (!account) {
+    if (!publicKey) {
       alert("Please connect a wallet.");
       return;
     }
@@ -133,6 +133,7 @@ function CheckoutPage() {
       await axios.post("http://localhost:3001/renters", {
         item_id: parseInt(id),
         email: userEmail,
+        public_key: publicKey
       }, {
         headers: {
           Authorization: `Bearer ${token}`,

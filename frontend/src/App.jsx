@@ -20,6 +20,7 @@ import Utils from "./components/Utils";
 import ChatPage from "./pages/ChatPage";
 import MessagesPage from "./pages/MessagesPage";
 import EmailSending from './components/EmailTemplates/EmailSending';
+import TransactionsPage from "./pages/Transactions";
 
 const App = () => {
   return (
@@ -49,6 +50,9 @@ const App = () => {
 
           {/* Route for the edit item page */}
           <Route path="/edit/:id" element={<EditItemPage />} />
+
+          {/* Route for the transactions page */}
+          <Route path="/transactions" element={<TransactionsPage />} />
 
           {/* Route for the rent page */}
           <Route path="/rent" element={<RentPage />} />
