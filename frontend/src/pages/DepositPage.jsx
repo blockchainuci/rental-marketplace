@@ -23,13 +23,13 @@ const DepositPage = () => {
         <Box p={4} bg="gray.100" borderRadius="md" w="full">
           <HStack>
             <Text fontSize="lg" fontWeight="bold" color = "black">Accepted Currency:</Text>
-            <Text fontSize="lg" fontWeight="bold" color="blue.600">USDC on BASE network</Text>
             <Image src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" 
                 alt="USDC Logo" 
                 boxSize="30px" 
                 mr={2} 
             />
             </HStack>
+          <Text fontSize="lg" fontWeight="bold" color="blue.600">USDC on BASE network</Text>
         </Box>
 
         <Box p={4} bg="gray.100" borderRadius="md" w="full">
