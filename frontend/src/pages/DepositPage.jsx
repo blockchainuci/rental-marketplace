@@ -4,8 +4,15 @@ import { Box, Text, Image, HStack, Button, Input, useClipboard, VStack } from "@
 
 const DepositPage = () => {
 
-    const { walletAddress } = useParams();
-    const { hasCopied, onCopy } = useClipboard(walletAddress);
+    const { walletAddress = ""} = useParams();
+
+    //const { hasCopied, onCopy } = useClipboard(walletAddress);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(walletAddress)
+        .then(() => alert("Copied!"))
+        .catch(err => console.error("Copy failed", err));
+    };
 
     return(
         <Box 
@@ -40,8 +47,8 @@ const DepositPage = () => {
         <Box w="full">
           <Text fontSize="md" fontWeight="medium" mb={1}>Your Wallet Address:</Text>
           <Input value={walletAddress} isReadOnly />
-          <Button mt={2} onClick={onCopy} colorScheme="blue">
-            {hasCopied ? "Copied!" : "Copy Address"}
+          <Button mt={2} onClick={handleCopy} colorScheme="blue">
+            Copy Address
           </Button>
         </Box>
       </VStack>
