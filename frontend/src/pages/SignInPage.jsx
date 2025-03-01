@@ -6,7 +6,6 @@ import { signInWithPopup } from "firebase/auth";
 import { provider } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { useBreakpointValue } from "@chakra-ui/react";
 
 function SignInPage() {
   const [email, setEmail] = useState("");
@@ -32,37 +31,30 @@ function SignInPage() {
   };
 
   return (
-    <Container maxW={useBreakpointValue({ base: "container.xs", md: "container.sm" })} 
-      py={16}
-      h="100vh"
-      display="flex"
-      alignItems="center"
-      mt="-10vh"
-    >
+    <Container maxW="container.sm" py={16}>
       <VStack
-        spacing={useBreakpointValue({ base: 4, md: 8 })}
-        w={useBreakpointValue({ base: "full", md: "500px"})}
+        spacing={8}
+        w="full"
         bg="white"
-        mx="auto"
-        p={useBreakpointValue({ base: 4, md: 8})}
+        p={8}
         borderRadius="lg"
         boxShadow="sm"
       >
-        <Text fontSize={useBreakpointValue({ base: 'xl', md: "2xl" })} fontWeight="bold">
+        <Text fontSize="2xl" fontWeight="bold">
           Sign In
         </Text>
 
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+           
 
         <Flex justify="center"><Button
               type="submit"
               colorScheme="blue"
-              size={useBreakpointValue({ base: "md", md: "lg" })}
-              maxW={useBreakpointValue({ base: "15rem", md: "20rem" })}
+              size="lg"
+              maxW="20rem"
               isLoading={isLoading}
-            > 
-            <FcGoogle/>
-              {useBreakpointValue({ base: "UCI SSO", md: "Sign in with UCI SSO" })}
+            > <FcGoogle/>
+              Sign in with UCI
             </Button></Flex>
   
         </form>
@@ -72,7 +64,7 @@ function SignInPage() {
         <VStack spacing={2}>
           <Text>Don't have an account?</Text>
           <Link color="blue.500" onClick={() => navigate("/signup")}>
-            {useBreakpointValue({ base: "Sign Up", md: "Create an Account" })}
+            Sign Up
           </Link>
         </VStack>
       </VStack>
