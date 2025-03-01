@@ -21,6 +21,7 @@ import {
   MdWallet,
   MdArrowBack
 } from "react-icons/md";
+import { useBreakpointValue } from "@chakra-ui/react";
 import WalletButtons from "./WalletButtons";
 import MenuButton from "./ui/menu-button";
 import WithdrawPage from "../pages/WithdrawPage";
@@ -31,6 +32,10 @@ const NavBarMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
 
+  
+  // Move all breakpoint values to the top
+  const menuWidth = useBreakpointValue({ base: '80vw', sm: '60vw', md: '40vw', lg: '30vw' });
+  const buttonLabel = useBreakpointValue({ base: '', md: user?.email?.replace(/@.*/, "") });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -95,6 +100,31 @@ const NavBarMenu = () => {
     </Button>
   );
 
+  // Update just the MenuButton component
+  // Update MenuButton to receive label directly
+  const MenuButton = ({
+    icon,
+    label,
+    onClick,
+    colorScheme = "white",
+    color = "black",
+  }) => (
+    <Button
+      onClick={onClick}
+      bg={colorScheme}
+      variant="outline"
+      borderRadius="lg"
+      size={useBreakpointValue({ base: 'sm', md: 'md'})}
+      color={color}
+      _hover={{ bg: `${colorScheme}.50` }}
+      minW={{ base: '35px', md: 'auto' }}
+      p={{ base: '1', md: '3' }}
+    >
+      <Box as={icon} boxSize={4}/>
+      {label}
+    </Button>
+  );
+
   if (!user) {
     return;
   }
@@ -102,7 +132,11 @@ const NavBarMenu = () => {
   return (
     <>
       {/* Button to toggle the menu */}
-      <MenuButton icon={MdPerson} label={user.email.replace(/@.*/, "")} onClick={handleMenuClick} />
+      <MenuButton 
+        icon={MdPerson} 
+        label={buttonLabel} 
+        onClick={handleMenuClick} 
+      />
       
       {/* Overlay that closes the menu when clicked */}
       {isOpen && (
@@ -123,7 +157,7 @@ const NavBarMenu = () => {
         top="0"
         right="0"
         height="100vh"
-        width="35vw"
+        width={menuWidth}
         bg="white"
         boxShadow="xl"
         transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
