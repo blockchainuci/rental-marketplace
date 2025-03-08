@@ -111,8 +111,14 @@ const WithdrawPage = () => {
     };
 
     return (
-        <Container maxW={containerWidth} pt={paddingTop}>
-            <VStack spacing={6} align="stretch">
+        <Flex 
+          minH="100vh" 
+          align="center" 
+          justify="center" 
+          pt="1"  // Add padding top to account for navbar
+        >
+          <Container maxW="container.sm">
+            <VStack spacing={8} align="stretch">
                 <Box textAlign="center" mb={6}>
                     <Text fontSize={fontSize} fontWeight="bold" mb={2}>
                         Withdraw USDC
@@ -163,7 +169,8 @@ const WithdrawPage = () => {
                     Withdraw
                 </Button>
             </VStack>
-        </Container>
+          </Container>
+        </Flex>
     );
 };
 

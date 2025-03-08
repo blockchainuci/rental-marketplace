@@ -142,7 +142,7 @@ const NavBarMenu = () => {
         width={menuWidth}
         bg="white"
         boxShadow="xl"
-        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+        transition="all 0.3s ease-in-out"  // Updated to match other transitions
         transform={isOpen ? "translateX(0)" : "translateX(100%)"}
         opacity={isOpen ? 1 : 0}
         zIndex={20}
@@ -198,7 +198,7 @@ const NavBarMenu = () => {
             direction="column"
             gap={4}
             height="100vh"
-            mt="7vh">
+            mt="7vh"> 
             <hr/>
             <MenuButton icon={MdBook} label="Learn" onClick={handleLearnClick} />
             <MenuButton icon={MdLogout} label="Sign Out" onClick={handleSignOut} />
