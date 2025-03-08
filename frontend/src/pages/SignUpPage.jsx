@@ -8,7 +8,6 @@ import { getBearerToken } from "../contexts/AuthContext";
 import { FcGoogle } from "react-icons/fc";
 import { signInWithPopup } from "firebase/auth";
 import { provider } from "../firebase";
-import { useBreakpointValue } from "@chakra-ui/react";
 
 function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -55,23 +54,16 @@ function SignUpPage() {
   };
 
   return (
-    <Container maxW={useBreakpointValue({base: 'container.lg', md: 'container.sm'})} 
-      py={16}
-      h="100vh"
-      display="flex"
-      alignItems="center"
-      mt="-10vh"
-    >
+    <Container maxW="container.sm" py={16}>
       <VStack
-        spacing={useBreakpointValue({ base: 4, md: 8 })}
-        w={useBreakpointValue({ base: "full", md: "500px"})}
+        spacing={8}
+        w="full"
         bg="white"
-        mx="auto"
-        p={useBreakpointValue({ base: 4, md: 8})}
+        p={8}
         borderRadius="lg"
         boxShadow="sm"
       >
-        <Text fontSize={useBreakpointValue({ base: 'xl', md: "2xl" })} fontWeight="bold">
+        <Text fontSize="2xl" fontWeight="bold">
           Sign Up
         </Text>
 
@@ -80,12 +72,12 @@ function SignUpPage() {
             <Flex justify="center"><Button
               type="submit"
               colorScheme="blue"
-              size={useBreakpointValue({ base: "md", md: "lg" })}
-              maxW={useBreakpointValue({ base: "15rem", md: "20rem" })}
+              size="lg"
+              maxW="20rem"
               isLoading={isLoading}
             >
-            <FcGoogle/>
-              {useBreakpointValue({ base: "UCI SSO", md: "Sign up with UCI SSO" })}
+              <FcGoogle/>
+              Sign up with UCI
             </Button></Flex>
         </form>
 
@@ -94,7 +86,7 @@ function SignUpPage() {
         <VStack spacing={2}>
           <Text>Already have an account?</Text>
           <Link color="blue.500" onClick={() => navigate("/signin")}>
-            {useBreakpointValue({ base: "Sign In", md: "Create an Account" })}
+            Sign In
           </Link>
         </VStack>
       </VStack>

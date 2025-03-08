@@ -9,12 +9,11 @@ import {
     Flex,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getUserUSDCBalance } from "../wallet/wallet";
+import { getUserUSDCBalance, getWallet } from "../wallet/wallet";  // Updated import
 import { useBreakpointValue } from "@chakra-ui/react";
 
 const WithdrawPage = () => {
-    const { walletAddress } = useParams();
+    const [walletAddress, setWalletAddress] = useState("");
     const [balance, setBalance] = useState("0.00");
     const [recipientAddress, setRecipientAddress] = useState("");
     const [isValidAddress, setIsValidAddress] = useState(true);
@@ -41,6 +40,19 @@ const WithdrawPage = () => {
         base: "20px",
         md: "24px"
     })
+
+    useEffect(() => {
+        const initializeWallet = async () => {
+            const wallet = await getWallet();  // Using getWallet instead
+            if (wallet) {
+                setWalletAddress(wallet);
+                const usdcBalance = await getUserUSDCBalance(wallet);
+                if (usdcBalance) setBalance(usdcBalance);
+            }
+        };
+        
+        initializeWallet();
+    }, []);
 
     useEffect(() => {
         const fetchBalance = async () => {
