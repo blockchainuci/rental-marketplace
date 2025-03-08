@@ -1,4 +1,4 @@
-import { HStack, Button, Flex, Icon, Text, Image, Box } from "@chakra-ui/react";
+import { HStack, Button, Flex, Icon, Text, Image, Box, useBreakpointValue } from "@chakra-ui/react";
 import { ColorModeButton } from "./ui/color-mode";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
@@ -10,6 +10,12 @@ import NavBarMenu from "./NavBarMenu";
 const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  
+  // Add breakpoint values
+  const showLabels = useBreakpointValue({ base: false, md: true });
+  const logoHeight = useBreakpointValue({ base: "70px", sm: "70px", md: "70px" });  // Changed from 0px to 35px for base
+  const buttonSize = useBreakpointValue({ base: "sm", md: "md" });
+  const navPadding = useBreakpointValue({ base: 2, md: 4 });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -31,16 +37,14 @@ const Navbar = () => {
       bg={colorScheme}
       variant="outline"
       borderRadius="xl"
-      size="md"
+      size={buttonSize}
       color={color}
       _hover={{ bg: `${colorScheme}.50` }}
     >
       <Box as={icon} boxSize={5} />
-      {label}
+      {showLabels && label}
     </Button>
   );
-
-
 
   return (
     <Flex
@@ -54,10 +58,10 @@ const Navbar = () => {
       bg="white"
       boxShadow="md"
       h={16}
-      px={4}
+      px={navPadding}
     >
       {/* Left Side */}
-      <Box>
+      <Box minW={showLabels ? "120px" : "40px"}>
         <NavButton
           icon={MdAdd}
           label="List Item"
@@ -69,19 +73,21 @@ const Navbar = () => {
         />
       </Box>
 
-      {/* Center */}
-      <Image
-        src="/ih_logo.png"
-        alt="Logo"
-        h="70px"
-        cursor="pointer"
-        onClick={() => navigate("/")}
-      />
+      {/* Center - Absolute positioning for true center */}
+      <Box position="absolute" left="50%" transform="translateX(-50%)" zIndex={0}>
+        <Image
+          src="/ih_logo.png"
+          alt="Logo"
+          h={logoHeight}
+          cursor="pointer"
+          onClick={() => navigate("/")}
+        />
+      </Box>
 
       {/* Right Side */}
-      <Box>
+      <Box minW={showLabels ? "120px" : "40px"}>
         {user ? (
-          <NavBarMenu/>
+          <NavBarMenu />
         ) : (
           <NavButton
             icon={MdLogin}

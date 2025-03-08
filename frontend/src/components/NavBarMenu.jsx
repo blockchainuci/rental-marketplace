@@ -31,9 +31,15 @@ const NavBarMenu = () => {
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  
   // Move all breakpoint values to the top
-  const menuWidth = useBreakpointValue({ base: '80vw', sm: '60vw', md: '40vw', lg: '30vw' });
+  // Update breakpoint values
+  const menuWidth = useBreakpointValue({ base: '100vw', sm: '70vw', md: '40vw', lg: '30vw' });
   const buttonLabel = useBreakpointValue({ base: '', md: user?.email?.replace(/@.*/, "") });
+  const menuPadding = useBreakpointValue({ base: 2, md: 4 });
+  const iconSize = useBreakpointValue({ base: 6, md: 8 });
+
+  const profileLabel = useBreakpointValue({ base: "", md: user?.email?.replace(/@.*/, "") });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -104,11 +110,16 @@ const NavBarMenu = () => {
     return;
   }
 
+  // In the NavBarMenu component, update the MenuButton render
   return (
     <>
       {/* Button to toggle the menu */}
-      <MenuButton icon={MdPerson} label={user.email.replace(/@.*/, "")} onClick={handleMenuClick} />
-
+      <MenuButton 
+        icon={MdPerson} 
+        label={profileLabel}
+        onClick={handleMenuClick} 
+      />
+      
       {/* Overlay that closes the menu when clicked */}
       {isOpen && (
         <Box
@@ -128,13 +139,14 @@ const NavBarMenu = () => {
         top="0"
         right="0"
         height="100vh"
-        width="40vw"
+        width={menuWidth}
         bg="white"
         boxShadow="xl"
         transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
         transform={isOpen ? "translateX(0)" : "translateX(100%)"}
         opacity={isOpen ? 1 : 0}
         zIndex={20}
+        p={menuPadding}
       >
         <Box p={4}>
           {showWithdraw ? (
