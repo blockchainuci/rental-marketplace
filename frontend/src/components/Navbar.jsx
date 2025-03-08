@@ -71,7 +71,7 @@ const Navbar = () => {
 
       {/* Center */}
       <Image
-        src="/rental_market_place_logo2.png"
+        src="/ih_logo.png"
         alt="Logo"
         h="70px"
         cursor="pointer"
