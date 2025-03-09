@@ -8,6 +8,7 @@ import {
   Box,
   Image,
   Flex,
+  Center,
   HStack,
   Container,
   Heading,
@@ -21,10 +22,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getBearerToken } from "../contexts/AuthContext";
 import { connectWallet } from "../wallet/wallet.js";
+import useCustomAlert from "../components/CustomAlert";
 
 function ListItemPage() {
   const [images, setImages] = useState([]);
-  const [imageFiles, setImageFiles] = useState(Array(4).fill(null));
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [rentalFee, setRentalFee] = useState("");
@@ -34,7 +35,8 @@ function ListItemPage() {
   const [uploading, setUploading] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [publicKey, setPublicKey] = useState(null);
-      
+  const customAlert = useCustomAlert();
+  
   useEffect(() => {
     async function autoConnectWallet() {
         try {
@@ -100,7 +102,8 @@ function ListItemPage() {
       if (
         !publicKey
       ) {
-        alert("Please connect a wallet");
+        customAlert.error("Please connect a wallet");
+        setIsLoading(false);
         return;
       }
       if (
@@ -111,11 +114,13 @@ function ListItemPage() {
         !daysLimit ||
         !userEmail
       ) {
-        alert("Please fill in all required fields");
+        customAlert.error("Please fill in all required fields");
+        setIsLoading(false);
         return;
       }
       const token = await getBearerToken();
       // Create item in database with email
+
       const response = await axios.post(`http://localhost:3001/items`, {
         name,
         description,
@@ -133,13 +138,13 @@ function ListItemPage() {
         }
       });
 
-      alert("Item listed successfully");
+
       navigate(`/items/${response.data.id}`);
     } catch (error) {
       console.error("Error submitting item:", error);
-      alert("Failed to list item. Please try again.");
+      customAlert.error("Failed to list item. Please try again.");
     } finally {
-      setIsLoading(false);
+      //setIsLoading(false);
     }
   };
 
@@ -155,6 +160,39 @@ function ListItemPage() {
   }, [images]);
 
   return (
+    <>
+    
+    {isLoading && (
+        <>
+        <Box
+          position="fixed"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="white"
+          opacity="0.5"
+          zIndex={1000}
+        />
+        <Center
+          position="fixed"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          zIndex={1001}
+        >
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="xl"
+          />
+        </Center>
+      </>
+      )}
+      
     <Container maxW="container.md" py={16}>
       <VStack
         spacing={8}
@@ -180,7 +218,9 @@ function ListItemPage() {
               disabled={uploading}
               p={1}
             />
-            {uploading && <Spinner size="sm" />}
+            <Center w="full" py={2}>
+              {uploading && <Spinner size="sm" mt={2} mb={4} />}
+            </Center>
           </VStack>
 
           {/* Image Preview */}
@@ -271,6 +311,7 @@ function ListItemPage() {
             mt={4}
             borderRadius="md"
             isLoading={isLoading}
+            isDisabled={isLoading}
             _hover={{
               transform: "translateY(-1px)",
               boxShadow: "md",
@@ -279,10 +320,10 @@ function ListItemPage() {
             List Item
           </Button>
 
-          {isLoading && <Spinner color="blue" size="lg" />}
         </form>
       </VStack>
     </Container>
+    </>
   );
 }
 
