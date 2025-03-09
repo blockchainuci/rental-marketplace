@@ -61,11 +61,11 @@ function WalletButton() {
     };
 
     const handleDepositClick = () => {
-        console.log("deposit click");
+        navigate("/deposit");
     };
 
     const handleWithdrawClick = () => {
-        console.log("withdraw click");
+        navigate("/withdraw");
     };
 
     return (

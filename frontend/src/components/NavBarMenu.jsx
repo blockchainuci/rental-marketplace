@@ -118,7 +118,7 @@ const NavBarMenu = () => {
         top="0"
         right="0"
         height="100vh"
-        width="40vw"
+        width="44vw"
         bg="white"
         boxShadow="xl"
         transition="transform 0.3s ease-in-out"

@@ -21,6 +21,8 @@ import ChatPage from "./pages/ChatPage";
 import MessagesPage from "./pages/MessagesPage";
 import EmailSending from './components/EmailTemplates/EmailSending';
 import TransactionsPage from "./pages/Transactions";
+import WithdrawPage from "./pages/WithdrawPage";
+import DepositPage from "./pages/DepositPage";
 
 const App = () => {
   return (
@@ -91,6 +93,12 @@ const App = () => {
           <Route path="/email-test" element={<EmailSending />} />
 
           <Route path="/utils" element={<Utils />} />
+
+          {/* Add the new withdraw page route */}
+          <Route path="/withdraw" element={<WithdrawPage />} />
+
+          {/* Add the new deposit page route */}
+          <Route path="/deposit" element={<DepositPage />} />
         </Routes>
 
         {/* Footer remains persistent across all routes */}
