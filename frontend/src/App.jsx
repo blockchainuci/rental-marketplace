@@ -21,6 +21,7 @@ import ChatPage from "./pages/ChatPage";
 import MessagesPage from "./pages/MessagesPage";
 import EmailSending from './components/EmailTemplates/EmailSending';
 import TransactionsPage from "./pages/Transactions";
+import WithdrawPage from "./pages/WithdrawPage";
 
 const App = () => {
   return (
@@ -91,6 +92,8 @@ const App = () => {
           <Route path="/email-test" element={<EmailSending />} />
 
           <Route path="/utils" element={<Utils />} />
+
+          <Route path="/withdraw" element={<WithdrawPage />} />
         </Routes>
 
         {/* Footer remains persistent across all routes */}
