@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^3.5.1",
     "@coinbase/onchainkit": "^0.37.3",
     "@coinbase/wallet-sdk": "^4.3.0",
