@@ -248,7 +248,13 @@ function ChatPage() {
           bg="white" 
           mb={16}>
           <HStack w="full">
-            <Input placeholder="Type your message..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
+            <Input placeholder="Type your message..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }} />
             <Button 
             variant="outline" color="blue.500" borderColor="blue.500" _hover={{ bg: "blue.50" }}
             onClick={handleSendMessage}
