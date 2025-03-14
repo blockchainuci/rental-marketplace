@@ -1,12 +1,39 @@
 import { useParams } from "react-router-dom";
 import { Box, Text, Image, HStack, Button, Input, useClipboard, VStack } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+import { getUserUSDCBalance, getWallet } from "../wallet/wallet";  // Updated import
+import { useBreakpointValue } from "@chakra-ui/react";
 
 
 const DepositPage = () => {
-
     const { walletAddress = ""} = useParams();
+    //const [setWalletAddress] = useState("");
+    const [balance, setBalance] = useState("0.00");
+    const fontSize = useBreakpointValue({
+      base: "xl",
+      md: "2xl"
+  });
+  
+    useEffect(() => {
+      const initializeWallet = async () => {
+          const wallet = await getWallet();  // Using getWallet instead
+          if (wallet) {
+              //setWalletAddress(wallet);
+              const usdcBalance = await getUserUSDCBalance(wallet);
+              if (usdcBalance) setBalance(usdcBalance);
+          }
+      };
+      
+      initializeWallet();
+  }, []);
 
-    //const { hasCopied, onCopy } = useClipboard(walletAddress);
+  useEffect(() => {
+      const fetchBalance = async () => {
+          const usdcBalance = await getUserUSDCBalance();
+          if (usdcBalance) setBalance(usdcBalance);
+      };
+      fetchBalance();
+  }, []);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(walletAddress)
@@ -21,30 +48,28 @@ const DepositPage = () => {
       mt={10} 
       p={6} 
       borderRadius="lg" 
-      bg="blue" 
-      boxShadow="md"
+      bg="white" 
+      //boxShadow="md"
     >
-      <VStack spacing={6} align="start">
-        <Text fontSize="2xl" fontWeight="bold">Deposit Funds</Text>
+      <VStack spacing={6} align="center">
+        <Text fontSize="2xl" fontWeight="bold">Deposit USDC</Text>
 
-        <Box p={4} bg="gray.100" borderRadius="md" w="full">
           <HStack>
-            <Text fontSize="lg" fontWeight="bold" color = "black">Accepted Currency:</Text>
             <Image src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" 
                 alt="USDC Logo" 
                 boxSize="30px" 
                 mr={2} 
             />
+            <Text fontSize="lg" color="black.600">Base Network</Text>
             </HStack>
-          <Text fontSize="lg" fontWeight="bold" color="blue.600">USDC on BASE network</Text>
-        </Box>
-
-        <Box p={4} bg="gray.100" borderRadius="md" w="full">
-          <Text fontSize="lg" fontWeight="bold" color="black">Wallet Balance:</Text>
-          <Text fontSize="lg" fontWeight="bold" color="green.600">$0.00</Text>
-        </Box>
-
+        
         <Box w="full">
+          <Box p={{ base: 4, md: 6 }} borderRadius="lg" borderWidth={1}>
+            <Text mb={2}>Available Balance</Text>
+            <Text fontsize={fontSize} fontWeight="bold">
+              ${balance} USDC
+            </Text>
+        </Box>
           <Text fontSize="md" fontWeight="medium" mb={1}>Your Wallet Address:</Text>
           <Input value={walletAddress} isReadOnly />
           <Button mt={2} onClick={handleCopy} colorScheme="blue">
