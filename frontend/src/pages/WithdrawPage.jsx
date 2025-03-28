@@ -9,7 +9,8 @@ import {
     Flex,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { getUserUSDCBalance, getWallet } from "../wallet/wallet";  // Updated import
+import { getUserUSDCBalance, getWallet, sendUSDCGasless } from "../wallet/wallet";
+import useCustomAlert from "../components/CustomAlert";
 import { useBreakpointValue } from "@chakra-ui/react";
 
 const WithdrawPage = () => {
@@ -18,6 +19,8 @@ const WithdrawPage = () => {
     const [recipientAddress, setRecipientAddress] = useState("");
     const [isValidAddress, setIsValidAddress] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const customAlert = useCustomAlert();
 
     const containerWidth = useBreakpointValue({
         base: "95%",
@@ -45,7 +48,7 @@ const WithdrawPage = () => {
         const initializeWallet = async () => {
             const wallet = await getWallet();  // Using getWallet instead
             if (wallet) {
-                setWalletAddress(wallet);
+                setWalletAddress(wallet.address);
                 const usdcBalance = await getUserUSDCBalance(wallet);
                 if (usdcBalance) setBalance(usdcBalance);
             }
@@ -95,19 +98,33 @@ const WithdrawPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateAddress(recipientAddress)) {
-            setErrorMessage("Invalid Base address. Please enter a valid Base address.");
+            customAlert.error("Invalid Base address. Please enter a valid Base address.");
             return;
         }
 
         if (recipientAddress.toLowerCase() === walletAddress.toLowerCase()) {
-            setErrorMessage("Cannot withdraw to the same wallet address.");
+            customAlert.error("Cannot withdraw to the same wallet address.");
             return;
         }
 
-        // Perform withdrawal logic here
-        // Maybe use the recipientAddress and balance variables for the withdrawal?
-        console.log("Withdrawing from: ", walletAddress);
-        console.log("Withdrawing to:", recipientAddress);
+        try {
+            setIsLoading(true);
+            const tx = await sendUSDCGasless(balance, recipientAddress);
+            
+            if (tx) {
+                const newBalance = await getUserUSDCBalance();
+                setBalance(newBalance);
+                customAlert.success("Withdrawal successful!");
+                setRecipientAddress(""); // Clear the input field
+            } else {
+                customAlert.error("Transaction failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Withdrawal error:", error);
+            customAlert.error(error.message || "Failed to process withdrawal");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -164,10 +181,12 @@ const WithdrawPage = () => {
                     colorScheme="blue"
                     size={buttonSize}
                     onClick={handleSubmit}
-                    isDisabled={!isValidAddress || !recipientAddress}
+                    isDisabled={!isValidAddress || !recipientAddress || isLoading}
+                    isLoading={isLoading}
                 >
                     Withdraw
                 </Button>
+                {customAlert.Toast}
             </VStack>
           </Container>
         </Flex>
