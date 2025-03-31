@@ -6,7 +6,7 @@ import {
   Button,
   Grid,
   Box,
-  Image,
+  Image,np,
   Flex,
   Center,
   HStack,
@@ -23,6 +23,8 @@ import { useNavigate } from "react-router-dom";
 import { getBearerToken } from "../contexts/AuthContext";
 import { connectWallet } from "../wallet/wallet.js";
 import useCustomAlert from "../components/CustomAlert";
+import imageCompression from "browser-image-compression";
+import heic2any from "heic2any";
 
 function ListItemPage() {
   const [images, setImages] = useState([]);
@@ -59,53 +61,65 @@ function ListItemPage() {
     useRef(null),
   ];
 
-  const handleImageUpload = async (e) => {
-    try {
-      setUploading(true);
-      const files = Array.from(e.target.files);
-<<<<<<< HEAD
   
-      const uploadPromises = files.map(async (file) => {
-        console.log("Original File Size:", file.size / 1024, "KB");
-  
-        const options = {
-          maxSizeMB: 0.5,  // Ensures max size ~500KB
-          maxWidthOrHeight: 800,
-          useWebWorker: true,
-          fileType: 'image/jpeg',
-        };
-  
+const handleImageUpload = async (e) => {
+  try {
+    setUploading(true);
+    const files = Array.from(e.target.files);
+
+    const uploadPromises = files.map(async (file) => {
+      // Validate file type
+      const allowedTypes = /(\.jpg|\.jpeg|\.png|\.heic)$/i;
+      if (!allowedTypes.test(file.name)) {
+        alert(`Unsupported file type: ${file.name}`);
+        return null;
+      }
+
+      let processedFile = file;
+
+      // Convert HEIC to JPEG
+      if (file.type === "image/heic" || file.name.endsWith(".heic")) {
         try {
-          const compressedFile = await imageCompression(file, options);
-          console.log("Compressed File Size:", compressedFile.size / 1024, "KB");
-  
-          const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
-          const snapshot = await uploadBytes(storageRef, compressedFile);
-          return getDownloadURL(snapshot.ref);
-        } catch (compressionError) {
-          console.error("Image compression failed:", compressionError);
-          return null; // Handle errors gracefully
+          const convertedBlob = await heic2any({ blob: file, toType: "image/jpeg" });
+          processedFile = new File([convertedBlob], file.name.replace(/.heic$/, ".jpg"), { type: "image/jpeg" });
+        } catch (error) {
+          console.error("HEIC conversion error:", error);
+          alert("Failed to convert HEIC file.");
+          return null;
         }
-=======
-      const uploadPromises = files.map(async (file) => {
-        const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        return getDownloadURL(snapshot.ref);
->>>>>>> origin/main
-      });
-  
-      const uploadedUrls = (await Promise.all(uploadPromises)).filter(url => url);
-      setImages((prevImages) => [...prevImages, ...uploadedUrls]);
-    } catch (error) {
-      console.error("Error uploading images:", error);
-    } finally {
-      setUploading(false);
-    }
-  };
-<<<<<<< HEAD
-  
-=======
->>>>>>> origin/main
+      }
+
+      // Compress the image
+      const options = {
+        maxSizeMB: 1, // Adjust size (1MB target)
+        maxWidthOrHeight: 1024, // Resize max dimension
+        useWebWorker: true,
+      };
+
+      try {
+        const compressedBlob = await imageCompression(processedFile, options);
+        processedFile = new File([compressedBlob], processedFile.name, { type: processedFile.type });
+      } catch (error) {
+        console.error("Compression error:", error);
+        alert("Failed to compress image.");
+        return null;
+      }
+
+      // Upload to Firebase Storage
+      const storageRef = ref(storage, `items/${Date.now()}-${processedFile.name}`);
+      const snapshot = await uploadBytes(storageRef, processedFile);
+      return getDownloadURL(snapshot.ref);
+    });
+
+    // Filter out any failed uploads
+    const uploadedUrls = (await Promise.all(uploadPromises)).filter((url) => url);
+    setImages((prevImages) => [...prevImages, ...uploadedUrls]);
+  } catch (error) {
+    console.error("Error uploading images:", error);
+  } finally {
+    setUploading(false);
+  }
+};
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
