@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ListItemPage from "./pages/ListItemPage";
+import EditItemPage from "./pages/EditItemPage";
 import RentPage from "./pages/RentPage";
 import LendPage from "./pages/LendPage";
 import CheckoutConfirmationPage from "./pages/CheckoutConfirmationPage";
@@ -16,8 +17,12 @@ import SignUpPage from "./pages/SignUpPage";
 import LedgerPage from "./pages/LedgerPage";
 import LearnPage from "./pages/LearnPage";
 import Utils from "./components/Utils";
-import ChatPage from "./pages/ChatPage"
+import ChatPage from "./pages/ChatPage";
+import MessagesPage from "./pages/MessagesPage";
 import EmailSending from './components/EmailTemplates/EmailSending';
+import TransactionsPage from "./pages/Transactions";
+import WithdrawPage from "./pages/WithdrawPage";
+import DepositPage from "./pages/DepositPage";
 
 const App = () => {
   return (
@@ -34,13 +39,22 @@ const App = () => {
           <Route path="/items/:id" element={<ItemDetailPage />} />
 
           {/* Route for the chat page */}
-          <Route path="/chat/:id" element={<ChatPage />} />
+          <Route path="/chat/:conversation_id" element={<ChatPage />} />
           
+          {/* Route for the messages page */}
+          <Route path="/messages" element={<MessagesPage />} />
+
           {/* Route for the checkout page */}
           <Route path="/checkout/:id" element={<CheckoutPage />} />
 
           {/* Route for the list item page */}
           <Route path="/list" element={<ListItemPage />} />
+
+          {/* Route for the edit item page */}
+          <Route path="/edit/:id" element={<EditItemPage />} />
+
+          {/* Route for the transactions page */}
+          <Route path="/transactions" element={<TransactionsPage />} />
 
           {/* Route for the rent page */}
           <Route path="/rent" element={<RentPage />} />
@@ -79,6 +93,12 @@ const App = () => {
           <Route path="/email-test" element={<EmailSending />} />
 
           <Route path="/utils" element={<Utils />} />
+
+          {/* Add the new withdraw page route */}
+          <Route path="/withdraw" element={<WithdrawPage />} />
+
+          {/* Add the new deposit page route */}
+          <Route path="/deposit" element={<DepositPage />} />
         </Routes>
 
         {/* Footer remains persistent across all routes */}

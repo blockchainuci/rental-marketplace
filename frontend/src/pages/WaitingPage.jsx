@@ -49,7 +49,9 @@ function WaitingPage() {
             // Check if both parties confirmed pickup
             if (
               newStatus.lender.is_picked_up &&
-              newStatus.renter.is_picked_up
+              newStatus.renter.is_picked_up &&
+              !newStatus.lender.is_returned &&
+              !newStatus.renter.is_returned
             ) {
               clearInterval(intervalId);
               navigate(`/pickup-confirmation/${id}`);
@@ -103,7 +105,7 @@ function WaitingPage() {
             Waiting for
           </Text>
           <Text fontSize="2xl" fontWeight="bold" color="green.700">
-            {item?.status === "Rented" ? "Return" : "Pick Up"}
+            {item?.status === "Renting" ? "Return" : "Pick Up"}
           </Text>
           <HStack spacing={2} color="green.600">
             <Icon as={MdInventory} />
@@ -135,7 +137,7 @@ function WaitingPage() {
             </Text>
             <Text fontSize="lg" color="gray.600">
               Please wait while both parties confirm the{" "}
-              {item?.status === "Rented" ? "return" : "pickup"}
+              {item?.status === "Renting" ? "return" : "pickup"}
             </Text>
           </VStack>
 
@@ -143,7 +145,7 @@ function WaitingPage() {
             <Text color="gray.600">
               Lender:{" "}
               {(
-                item?.status === "Rented"
+                item?.status === "Renting"
                   ? status.lender.is_returned
                   : status.lender.is_picked_up
               )
@@ -153,7 +155,7 @@ function WaitingPage() {
             <Text color="gray.600">
               Renter:{" "}
               {(
-                item?.status === "Rented"
+                item?.status === "Renting"
                   ? status.renter.is_returned
                   : status.renter.is_picked_up
               )

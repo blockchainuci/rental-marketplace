@@ -2,13 +2,13 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
     "express": "^4.21.2",
     "firebase-admin": "^13.0.2",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "openai": "^4.80.1",
-    "pg": "^8.13.1",
-    "react-html-email": "^3.0.0"
+    "pg": "^8.13.1"
   },
   "scripts": {
     "start": "nodemon server.js"

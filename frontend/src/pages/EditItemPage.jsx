@@ -4,28 +4,25 @@ import {
   Input,
   Textarea,
   Button,
-  Grid,
-  Box,
   Image,
   Flex,
-  Center,
   HStack,
   Container,
   Heading,
   SimpleGrid,
   Spinner,
 } from "@chakra-ui/react";
-import { useState, useRef, useEffect } from "react";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useState, useEffect } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage, auth } from "../firebase";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getBearerToken } from "../contexts/AuthContext";
-import { connectWallet } from "../wallet/wallet.js";
-import useCustomAlert from "../components/CustomAlert";
 
-function ListItemPage() {
+function EditItemPage() {
+  const { id } = useParams();
   const [images, setImages] = useState([]);
+  const [imageFiles, setImageFiles] = useState(Array(4).fill(null));
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [rentalFee, setRentalFee] = useState("");
@@ -34,122 +31,80 @@ function ListItemPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
-  const [publicKey, setPublicKey] = useState(null);
-  const customAlert = useCustomAlert();
-  
-  useEffect(() => {
-    async function autoConnectWallet() {
-        try {
-            const accounts = await connectWallet();
-            if (accounts && accounts.length > 0) {
-              setPublicKey(accounts[0]); // Set the first account
-            }
-        } catch (error) {
-            console.error("Auto-connect error:", error);
-        }
-    }
-  autoConnectWallet();
-  }, []); 
+  const [fetchLoading, setFetchLoading] = useState(true);
 
   const navigate = useNavigate();
-  const fileInputRefs = [
-    useRef(null),
-    useRef(null),
-    useRef(null),
-    useRef(null),
-  ];
 
-  const handleImageUpload = async (e) => {
-    try {
-      setUploading(true);
-      const files = Array.from(e.target.files);
-<<<<<<< HEAD
   
-      const uploadPromises = files.map(async (file) => {
-        console.log("Original File Size:", file.size / 1024, "KB");
-  
-        const options = {
-          maxSizeMB: 0.5,  // Ensures max size ~500KB
-          maxWidthOrHeight: 800,
-          useWebWorker: true,
-          fileType: 'image/jpeg',
-        };
-  
-        try {
-          const compressedFile = await imageCompression(file, options);
-          console.log("Compressed File Size:", compressedFile.size / 1024, "KB");
-  
-          const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
-          const snapshot = await uploadBytes(storageRef, compressedFile);
-          return getDownloadURL(snapshot.ref);
-        } catch (compressionError) {
-          console.error("Image compression failed:", compressionError);
-          return null; // Handle errors gracefully
-        }
-=======
-      const uploadPromises = files.map(async (file) => {
-        const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        return getDownloadURL(snapshot.ref);
->>>>>>> origin/main
-      });
-  
-      const uploadedUrls = (await Promise.all(uploadPromises)).filter(url => url);
-      setImages((prevImages) => [...prevImages, ...uploadedUrls]);
-    } catch (error) {
-      console.error("Error uploading images:", error);
-    } finally {
-      setUploading(false);
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/items/${id}`);
+        const item = response.data;
+        
+        //populate all fields with existing data so user knows what they're editing
+        setName(item.name);
+        setDescription(item.description);
+        setRentalFee(item.rental_fee.toString());
+        setCollateral(item.collateral.toString());
+        setDaysLimit(item.days_limit.toString());
+        setImages(item.images);
+      } catch (error) {
+        console.error("Error fetching item:", error);
+        alert("Error loading item data");
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchItem();
     }
-  };
-<<<<<<< HEAD
-  
-=======
->>>>>>> origin/main
+  }, [id]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUserEmail(user.email);
       } else {
-        // Redirect to login if no user is found
         navigate("/signin");
       }
     });
 
-    // Cleanup subscription
     return () => unsubscribe();
   }, [navigate]);
+
+  const handleImageUpload = async (e) => {
+    try {
+      setUploading(true);
+      const files = Array.from(e.target.files);
+      const uploadPromises = files.map(async (file) => {
+        const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        return getDownloadURL(snapshot.ref);
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setImages(uploadedUrls);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
 
-      // Validate required fields
-      if (
-        !publicKey
-      ) {
-        customAlert.error("Please connect a wallet");
-        setIsLoading(false);
+      if (!name || !description || !rentalFee || !collateral || !daysLimit || !userEmail) {
+        alert("Please fill in all required fields");
         return;
       }
-      if (
-        !name ||
-        !description ||
-        !rentalFee ||
-        !collateral ||
-        !daysLimit ||
-        !userEmail
-      ) {
-        customAlert.error("Please fill in all required fields");
-        setIsLoading(false);
-        return;
-      }
-      const token = await getBearerToken();
-      // Create item in database with email
 
-      const response = await axios.post(`http://localhost:3001/items`, {
+      const token = await getBearerToken();
+      await axios.put(`http://localhost:3001/items/${id}`, {
         name,
         description,
         rental_fee: parseFloat(rentalFee),
@@ -158,84 +113,39 @@ function ListItemPage() {
         images,
         email: userEmail,
         status: "Listed",
-        public_key: publicKey
-      },
-      {
+      }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-
-      navigate(`/items/${response.data.id}`);
+      alert("Item updated successfully");
+      navigate(`/items/${id}`);
     } catch (error) {
-      console.error("Error submitting item:", error);
-      customAlert.error("Failed to list item. Please try again.");
+      console.error("Error updating item:", error);
+      alert("Failed to update item. Please try again.");
     } finally {
-      //setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    return () => {
-      // Cleanup URLs when component unmounts
-      images.forEach((url) => {
-        if (url && url.startsWith("blob:")) {
-          URL.revokeObjectURL(url);
-        }
-      });
-    };
-  }, [images]);
+  if (fetchLoading) {
+    return (
+      <Flex justify="center" align="center" h="100vh">
+        <Spinner size="xl" />
+      </Flex>
+    );
+  }
 
+  //keeping it similar to the itemdetailpage.jsx styling
   return (
-    <>
-    
-    {isLoading && (
-        <>
-        <Box
-          position="fixed"
-          top="0"
-          left="0"
-          right="0"
-          bottom="0"
-          bg="white"
-          opacity="0.5"
-          zIndex={1000}
-        />
-        <Center
-          position="fixed"
-          top="0"
-          left="0"
-          right="0"
-          bottom="0"
-          zIndex={1001}
-        >
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="blue.500"
-            size="xl"
-          />
-        </Center>
-      </>
-      )}
-      
     <Container maxW="container.md" py={16}>
-      <VStack
-        spacing={8}
-        w="full"
-        bg="white"
-        p={8}
-        borderRadius="lg"
-        boxShadow="sm"
-      >
+      <VStack spacing={8} w="full" bg="white" p={8} borderRadius="lg" boxShadow="sm">
         <Heading size="lg" alignSelf="start">
-          List Item
+          Edit Item
         </Heading>
 
         <form onSubmit={handleSubmit}>
-          {/* Image Upload */}
           <VStack spacing={4} align="start" w="full">
             <Text fontWeight="medium">Images</Text>
             <Input
@@ -246,12 +156,9 @@ function ListItemPage() {
               disabled={uploading}
               p={1}
             />
-            <Center w="full" py={2}>
-              {uploading && <Spinner size="sm" mt={2} mb={4} />}
-            </Center>
+            {uploading && <Spinner size="sm" />}
           </VStack>
 
-          {/* Image Preview */}
           {images.length > 0 && (
             <SimpleGrid columns={[2, 3]} spacing={4} my={4}>
               {images.map((url, index) => (
@@ -267,10 +174,9 @@ function ListItemPage() {
             </SimpleGrid>
           )}
 
-          {/* Item Details */}
           <VStack spacing={6} w="full">
             <Input
-              placeholder="What are you selling?"
+              placeholder="Item name"
               size="lg"
               borderRadius="md"
               value={name}
@@ -278,7 +184,7 @@ function ListItemPage() {
               _placeholder={{ color: "gray.400" }}
             />
             <Textarea
-              placeholder="Describe your item (5+ words)"
+              placeholder="Item description"
               minH="120px"
               size="lg"
               borderRadius="md"
@@ -288,7 +194,6 @@ function ListItemPage() {
             />
           </VStack>
 
-          {/* Pricing Section */}
           <VStack spacing={6} w="full">
             <Text fontSize="xl" fontWeight="semibold" alignSelf="start">
               Pricing
@@ -298,7 +203,7 @@ function ListItemPage() {
               <Text color="gray.600">$</Text>
               <Input
                 type="number"
-                placeholder="Set your daily rate"
+                placeholder="Daily rate"
                 size="lg"
                 borderRadius="md"
                 value={rentalFee}
@@ -311,7 +216,7 @@ function ListItemPage() {
               <Text color="gray.600">$</Text>
               <Input
                 type="number"
-                placeholder="Set your Collateral"
+                placeholder="Collateral amount"
                 size="lg"
                 borderRadius="md"
                 value={collateral}
@@ -329,7 +234,6 @@ function ListItemPage() {
             />
           </VStack>
 
-          {/* Submit Button */}
           <Button
             type="submit"
             w="full"
@@ -339,20 +243,19 @@ function ListItemPage() {
             mt={4}
             borderRadius="md"
             isLoading={isLoading}
-            isDisabled={isLoading}
             _hover={{
               transform: "translateY(-1px)",
               boxShadow: "md",
             }}
           >
-            List Item
+            Save Changes
           </Button>
 
+          {isLoading && <Spinner color="blue" size="lg" />}
         </form>
       </VStack>
     </Container>
-    </>
   );
 }
 
-export default ListItemPage;
+export default EditItemPage;

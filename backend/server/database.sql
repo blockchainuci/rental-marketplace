@@ -37,7 +37,8 @@ CREATE TABLE Lender (
     is_returned BOOLEAN NOT NULL,
     email VARCHAR(128) NOT NULL,
     PRIMARY KEY (item_id),
-    FOREIGN KEY (item_id) REFERENCES Items(id)
+    FOREIGN KEY (item_id) REFERENCES Items(id),
+    public_key VARCHAR(256)
 );
 
 CREATE TABLE Renter (
@@ -46,11 +47,32 @@ CREATE TABLE Renter (
     is_returned BOOLEAN NOT NULL,
     email VARCHAR(128) NOT NULL,
     PRIMARY KEY (item_id),
-    FOREIGN KEY (item_id) REFERENCES Items(id)
+    FOREIGN KEY (item_id) REFERENCES Items(id),
+    public_key VARCHAR(256)
 );
 
 CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(128) NOT NULL,
-    wallet_address VARCHAR(256) NOT NULL
+    wallet_address VARCHAR(256)
+);
+
+CREATE TABLE Messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id INTEGER NOT NULL,
+    text TEXT NOT NULL,
+    timestamp TEXT,
+    item_id INT REFERENCES Items(id),
+    sender_email VARCHAR(128),
+    receiver_email VARCHAR(128),
+    is_read BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (conversation_id) REFERENCES Conversations(conversation_id)
+);
+
+CREATE TABLE Conversations (
+    conversation_id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES Items(id),
+    lender_email VARCHAR(128) NOT NULL,
+    renter_email VARCHAR(128) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );

@@ -20,6 +20,7 @@ router.post("/", middleware.decodeToken, async (req, res) => {
       days_limit,
       images,
       email,
+      public_key
     } = req.body;
 
     const response = await openai.chat.completions.create({
@@ -108,10 +109,16 @@ router.post("/", middleware.decodeToken, async (req, res) => {
         ]
       );
 
+      // Ensure public_key column exists in the Lender table
+      await client.query(`
+        ALTER TABLE Lender 
+        ADD COLUMN IF NOT EXISTS public_key VARCHAR(256);
+      `);
+
       // Create the lender entry
       await client.query(
-        "INSERT INTO Lender (item_id, email, is_picked_up, is_returned) VALUES($1, $2, false, false)",
-        [newItem.rows[0].id, email]
+        "INSERT INTO Lender (item_id, email, is_picked_up, is_returned, public_key) VALUES($1, $2, false, false, $3)",
+        [newItem.rows[0].id, email, public_key]
       );
 
       await client.query("COMMIT");
@@ -183,7 +190,6 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update item
-
 router.put("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;

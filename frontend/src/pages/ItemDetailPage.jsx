@@ -24,7 +24,9 @@ import {
   MdTimer,
   MdInventory,
   MdEmail,
+  MdCreate
 } from "react-icons/md";
+import { getBearerToken } from "../contexts/AuthContext";
 import { GiWeight } from "react-icons/gi";
 import { FaLeaf } from "react-icons/fa";
 import { MdShoppingCart } from "react-icons/md";
@@ -149,15 +151,62 @@ function ItemDetailPage() {
     );
   };
 
-  const handleEmailClick = () => {
-    if (lenderEmail) {
-      setShowEmail(true);
-      const subject = `Question about ${item.name}`;
-      const body = `Hi, I'm interested in renting your ${item.name}.`;
-      const mailtoLink = `mailto:${lenderEmail}?subject=${encodeURIComponent(
-        subject
-      )}&body=${encodeURIComponent(body)}`;
-      window.open(mailtoLink, "_blank");
+  const fetchLenderEmail = async () => {
+    if (item.email) {
+      return item.email;
+    }
+    try {
+      const response = await axios.get(`http://localhost:3001/lenders/${id}`);
+      return response.data.email;
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching item:", error);
+    }
+  };
+
+  const fetchChatRoom = async (item_id, lenderEmail, renter_email) => {
+    try {
+      const response = await axios.get(`http://localhost:3001/conversations/${item_id}/${lenderEmail}/${renter_email}`);
+      return response;
+    } catch (error) {
+      console.error("Error fetching item:", error);
+    }
+  };
+
+  const handleChatClick= async () => {
+
+    const lenderEmail = await fetchLenderEmail();
+
+    if (!lenderEmail) {
+      // Could not connect the item to a user
+      alert("This lender is not set up to receive messages");
+      return;
+    }
+
+    if (lenderEmail == currentUserEmail) {
+      alert("This is your item");
+      return;
+    }
+
+    const token = await getBearerToken();
+    try {
+      // If the conversation exists go to it
+      const chatRoom = await fetchChatRoom(id, lenderEmail, currentUserEmail)
+      navigate(`/chat/${chatRoom.data.conversation_id}`);
+    } catch(error) {
+      // The chat room doesn't exist make a new one
+      const response = await axios.post(`http://localhost:3001/conversations`, {
+        item_id: id,
+        lender_email: lenderEmail,
+        renter_email: currentUserEmail
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      navigate(`/chat/${response.data.conversation_id}`);
     }
   };
 
@@ -203,7 +252,7 @@ function ItemDetailPage() {
             bg="green.500"
             onClick={() => navigate(`/checkout/${id}`)}
             _hover={{ bg: "green.600" }}
-            isDisabled={isOwner}
+            disabled={isOwner ? true : false}
             title={isOwner ? "You cannot rent your own item" : ""}
           >
             <HStack spacing={2}>
@@ -211,12 +260,30 @@ function ItemDetailPage() {
               <Text>{isOwner ? "Your Item" : "Rent Now"}</Text>
             </HStack>
           </Button>
-          <Button
+
+          {isOwner ? (
+            <Button
+              size="xl"
+              borderRadius={"lg"}
+              w="50%"
+              bg="blue.500"
+              onClick={() => navigate(`/edit/${id}`)}
+              _hover={{ bg: "blue.600" }}
+              disabled={item.status === "Listed" ? false : true}
+              title={"This is ued to edit your item"}
+            >
+              <HStack spacing={2}>
+                <Icon as={MdCreate} boxSize={5} />
+                <Text>Edit Item</Text>
+              </HStack>
+            </Button>
+          ) : (
+            <Button
             size="xl"
             borderRadius={"lg"}
             w="50%"
             bg="blue.500"
-            onClick={() => navigate(`/chat/${id}`)}
+            onClick={() => handleChatClick()}
             _hover={{ bg: "blue.600" }}
             isDisabled={isOwner}
             title={isOwner ? "This is your item" : ""}
@@ -228,6 +295,7 @@ function ItemDetailPage() {
               </Text>
             </HStack>
           </Button>
+          )}
         </Flex>
 
         <Box h="2px" bg="gray.200" my={4} />
