@@ -36,15 +36,6 @@ const NavBarMenu = () => {
     return () => unsubscribe();
   }, []);
 
-  const formatEmail = (email) => {
-    if (!email) return "";
-    const username = email.replace(/@.*/, "");
-    if (username.length > 9) {
-      return `${username.substring(0, 6)}...`;
-    }
-    return username;
-  };
-
   const handleSignOut = async () => {
     try {
       setIsOpen(false);
@@ -106,7 +97,7 @@ const NavBarMenu = () => {
   return (
     <>
       {/* Button to toggle the menu */}
-      <MenuButton icon={MdPerson} label={formatEmail(user.email)} onClick={handleMenuClick} />
+      <MenuButton icon={MdPerson} label={user.email.replace(/@.*/, "")} onClick={handleMenuClick} />
 
       {/* Overlay that closes the menu when clicked */}
       {isOpen && (
@@ -153,7 +144,7 @@ const NavBarMenu = () => {
             justifyContent="center"
             mb={2}>  
             <MdPerson size={24} /> 
-            <Text>{formatEmail(user.email)}</Text>
+            <Text>{user.email.replace(/@.*/, "")}</Text>
           </Flex>
           <hr/>
 
