@@ -24,8 +24,12 @@ import TransactionsPage from "./pages/Transactions";
 import WithdrawPage from "./pages/WithdrawPage";
 import DepositPage from "./pages/DepositPage";
 
+
+
+
 const App = () => {
   return (
+    
     <Router>
       <div>
         {/* Navbar remains persistent across all routes */}
@@ -105,6 +109,7 @@ const App = () => {
         <Footer />
       </div>
     </Router>
+    
   );
 };
 
