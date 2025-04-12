@@ -35,6 +35,21 @@ function WalletButton() {
 
     // Use ref for activeConnector to avoid issues with asynchronous state updates
     const activeConnector = useRef(null);
+    const handleDeposit = async () => {
+        // Gather necessary data to send in the redirect
+        const referrer = "UCI rentalplace"; // Replace with your app name
+        const referrerLogo = "https://example.com/your-app-logo.svg"; // Optional, link to your logo
+        const callbackUrl = "http://localhost:3000/"; // Replace with your callback URL
+        const inputCurrency = "USD"; // Currency to swap from, defaults to user's local currency or USD
+        const toToken = "USDC"; // Token to swap to, e.g., USDC
+        const recipientAddress = getAccount(wagmiConfig).address; // Replace with the recipient's address (your wallet)
+    
+        // Dynamically construct the ZKP2P URL with query parameters
+        const zkp2pUrl = `https://zkp2p.xyz/swap?referrer=${encodeURIComponent(referrer)}&referrerLogo=${encodeURIComponent(referrerLogo)}&callbackUrl=${encodeURIComponent(callbackUrl)}&inputCurrency=${encodeURIComponent(inputCurrency)}&toToken=${encodeURIComponent(toToken)}&recipientAddress=${encodeURIComponent(recipientAddress)}`;
+    
+        // Redirect user to the ZKP2P platform
+        window.location.href = zkp2pUrl;
+      };
 
     useEffect(() => {
         setAvailableConnectors(getWalletConnectors());
@@ -120,7 +135,7 @@ function WalletButton() {
                         <Text as="span" fontSize="md" fontWeight="normal" color="gray.500" ml={1}>USDC</Text>
                     </Text>
                     <VStack spacing={4} mt={6} width="80%" maxWidth="300px">
-                        <MenuButton icon={MdDownload} label="Deposit" onClick={() => navigate("/deposit")} />
+                        <MenuButton icon={MdDownload} label="Deposit" onClick={() => handleDeposit()} />
                         <MenuButton icon={MdUpload} label="Withdraw" onClick={() => navigate("/withdraw")} />
                         <MenuButton icon={MdList} label="Transactions" onClick={() => navigate("/transactions")} />
                         <Button leftIcon={<MdLogout />} onClick={handleDisconnect} isLoading={loading} colorScheme="red" variant="outline">
