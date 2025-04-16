@@ -16,13 +16,12 @@ import MenuButton from "./ui/menu-button";
 import { getUserUSDCBalance } from "../wallet/wallet.js";
 import { useNavigate } from "react-router-dom";
 
-function WalletButton() {
+function WalletButton({onWithdrawClick}) {
     const [account, setAccount] = useState(null);
-
-      const [usdcBaseBalance, setUsdcBaseBalance] = useState(0.0);
-      const navigate = useNavigate();
+    const [usdcBaseBalance, setUsdcBaseBalance] = useState(0.0);
+    const navigate = useNavigate();
       
-      useEffect(() => {
+    useEffect(() => {
         async function autoConnectWallet() {
             try {
                 const accounts = await connectWallet();
@@ -66,6 +65,9 @@ function WalletButton() {
 
     const handleWithdrawClick = () => {
         console.log("withdraw click");
+        if (onWithdrawClick) {
+            onWithdrawClick();
+        }
     };
 
     return (

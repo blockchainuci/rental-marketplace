@@ -2,7 +2,8 @@ import {
   Button, 
   Flex, 
   Text, 
-  Box
+  Box,
+  useBreakpointValue
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
@@ -18,15 +19,27 @@ import {
 import {
   MdClose,
   MdBook,
-  MdWallet
+  MdWallet,
+  MdArrowBack
 } from "react-icons/md";
 import WalletButtons from "./WalletButtons";
 import MenuButton from "./ui/menu-button";
+import WithdrawPage from "../pages/WithdrawPage";
 
 const NavBarMenu = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  
+  // Move all breakpoint values to the top
+  // Update breakpoint values
+  const menuWidth = useBreakpointValue({ base: '100vw', sm: '70vw', md: '40vw', lg: '30vw' });
+  const buttonLabel = useBreakpointValue({ base: '', md: user?.email?.replace(/@.*/, "") });
+  const menuPadding = useBreakpointValue({ base: 2, md: 4 });
+  const iconSize = useBreakpointValue({ base: 6, md: 8 });
+
+  const profileLabel = useBreakpointValue({ base: "", md: user?.email?.replace(/@.*/, "") });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -35,6 +48,10 @@ const NavBarMenu = () => {
 
     return () => unsubscribe();
   }, []);
+
+  const handleBackToWallet = () => {
+    setShowWithdraw(false);
+  }
 
   const handleSignOut = async () => {
     try {
@@ -63,7 +80,6 @@ const NavBarMenu = () => {
     }
   };
   
-
   const IconButton = ({
     icon,
     label,
@@ -94,11 +110,16 @@ const NavBarMenu = () => {
     return;
   }
 
+  // In the NavBarMenu component, update the MenuButton render
   return (
     <>
       {/* Button to toggle the menu */}
-      <MenuButton icon={MdPerson} label={user.email.replace(/@.*/, "")} onClick={handleMenuClick} />
-
+      <MenuButton 
+        icon={MdPerson} 
+        label={profileLabel}
+        onClick={handleMenuClick} 
+      />
+      
       {/* Overlay that closes the menu when clicked */}
       {isOpen && (
         <Box
@@ -118,48 +139,66 @@ const NavBarMenu = () => {
         top="0"
         right="0"
         height="100vh"
-        width="40vw"
+        width={menuWidth}
         bg="white"
         boxShadow="xl"
-        transition="transform 0.3s ease-in-out"
+        transition="all 0.3s ease-in-out"  // Updated to match other transitions
         transform={isOpen ? "translateX(0)" : "translateX(100%)"}
-        zIndex={20} // Ensures menu is above overlay
+        opacity={isOpen ? 1 : 0}
+        zIndex={20}
+        p={menuPadding}
       >
+        <Box p={4}>
+          {showWithdraw ? (
+            <IconButton
+              icon={MdArrowBack}
+              colorScheme="white.200"
+              color="black"
+              variant="ghost"
+              border="none"
+              onClick={handleBackToWallet}
+              _hover={{ bg: "gray.200" }}
+            />
+          ) : (
+            <IconButton
+              icon={MdClose}
+              colorScheme="white.200"
+              color="black"
+              variant="ghost"
+              border="none"
+              onClick={handleMenuClick}
+              _hover={{ bg: "gray.200" }}
+            />
+          )}
+        </Box>
 
-
-        <IconButton
-          icon={MdClose}
-          colorScheme="white.200"
-          color="black"
-          variant="ghost"
-          border="none"
-          onClick={handleMenuClick}
-          _hover={{ bg: "gray.200" }}
-        />
-
+        {/* Profile animation */}
         <Box p={4}>
           <Flex 
             align="center" 
             gap={2}
             justifyContent="center"
-            mb={2}>  
+            mb={4}
+            opacity={isOpen ? 1 : 0}
+            transform={isOpen ? "translateY(0)" : "translateY(-20px)"}
+            transition="all 0.3s ease-in-out"
+          >  
             <MdPerson size={24} /> 
             <Text>{user.email.replace(/@.*/, "")}</Text>
           </Flex>
           <hr/>
 
-
-
-        <WalletButtons/>
-
-
-
+          {showWithdraw ? (
+            <WithdrawPage/>
+          ) : (
+            <WalletButtons onWithdrawClick={() => setShowWithdraw(true)} />
+          )}
 
           <Flex
             direction="column"
             gap={4}
             height="100vh"
-            mt="7vh">
+            mt="7vh"> 
             <hr/>
             <MenuButton icon={MdBook} label="Learn" onClick={handleLearnClick} />
             <MenuButton icon={MdLogout} label="Sign Out" onClick={handleSignOut} />
