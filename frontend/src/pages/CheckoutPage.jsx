@@ -86,7 +86,11 @@ function CheckoutPage() {
     const value = e.target.value;
     if (value === "") {
       setDays("");
-    } else {
+    }  
+    else if(value > item.days_limit){
+      setDays(item.days_limit);
+    }
+    else {
       const numValue = parseInt(value);
       setDays(numValue >= 1 ? numValue : 1);
     }

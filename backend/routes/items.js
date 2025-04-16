@@ -203,6 +203,11 @@ router.put("/:id", middleware.decodeToken, async (req, res) => {
       status,
       days_rented,
     } = req.body;
+
+    if(days_rented > days_limit){
+      throw(RangeError);
+    }
+    
     const updateItem = await pool.query(
       "UPDATE items SET name = $1, description = $2, rental_fee = $3, collateral = $4, days_limit = $5, images = $6, status = $7, days_rented = $8 WHERE id = $9 RETURNING *",
       [
