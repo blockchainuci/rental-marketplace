@@ -4,13 +4,15 @@ import {
     Button, 
     Flex,
     Text,
-    Box
+    IconButton,
+    Tooltip
   } from "@chakra-ui/react";
   import {
     MdWallet,
     MdUpload,
     MdDownload,
-    MdList
+    MdList,
+    MdContentCopy
   } from "react-icons/md";
 import MenuButton from "./ui/menu-button";
 import { getUserUSDCBalance } from "../wallet/wallet.js";
@@ -18,9 +20,9 @@ import { useNavigate } from "react-router-dom";
 
 function WalletButton() {
     const [account, setAccount] = useState(null);
-
-      const [usdcBaseBalance, setUsdcBaseBalance] = useState(0.0);
-      const navigate = useNavigate();
+    const [usdcBaseBalance, setUsdcBaseBalance] = useState(0.0);
+    const [copySuccess, setCopySuccess] = useState(false);
+    const navigate = useNavigate();
       
       useEffect(() => {
         async function autoConnectWallet() {
@@ -68,6 +70,19 @@ function WalletButton() {
         navigate("/withdraw");
     };
 
+    const copyToClipboard = () => {
+        if (account) {
+            navigator.clipboard.writeText(account)
+                .then(() => {
+                    setCopySuccess(true);
+                    setTimeout(() => setCopySuccess(false), 2000);
+                })
+                .catch(err => {
+                    console.error("Copy failed: ", err);
+                });
+        }
+    };
+
     return (
         <div>
             {account ? (
@@ -82,6 +97,15 @@ function WalletButton() {
                             mt = "7vh">  
                             <MdWallet size={24} />
                             <Text>{account.replace(/^(.{3}).*(.{3})$/, "$1...$2")}</Text>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={copyToClipboard}
+                                colorScheme={copySuccess ? "green" : "gray"}
+                                title={copySuccess? "Copied!" : "Copy full address"}
+                            >
+                                <MdContentCopy size={16} />
+                            </Button>
                         </Flex>
                     
                             <Text>${Number(usdcBaseBalance).toLocaleString(undefined, { 
