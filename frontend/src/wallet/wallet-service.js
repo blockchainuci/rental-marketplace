@@ -4,6 +4,7 @@ import {base } from 'wagmi/chains';
 import { getAccount, connect, disconnect } from '@wagmi/core';
 import { createCoinbaseWalletSDK } from '@coinbase/wallet-sdk';
 import { ethers } from 'ethers';
+import { defineChain } from 'viem';
 
 // COINBASE SMART WALLET SDK SETUP
 export const coinbaseSDK = createCoinbaseWalletSDK({
@@ -18,14 +19,36 @@ export const coinbaseSDK = createCoinbaseWalletSDK({
   },
 });
 
+export const baseSepolia = defineChain({
+  id: 84532,
+  name: 'Base Sepolia',
+  network: 'base-sepolia',
+  nativeCurrency: {
+    name: 'Ethereum',
+    symbol: 'ETH',
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://sepolia.base.org'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'BaseScan',
+      url: 'https://sepolia.basescan.org',
+    },
+  },
+});
+
 // Create Coinbase provider
 export const coinbaseProvider = coinbaseSDK.getProvider();
 
 // WAGMI SETUP FOR THIRD-PARTY WALLETS
 export const wagmiConfig = createConfig({
-  chains: [ base],
+  chains: [ baseSepolia],
   transports: {
-    [base.id]: http(),
+    [baseSepolia.id]: http(),
   },
   connectors: [
     injected(), // Named for better UX
@@ -78,7 +101,7 @@ export const connectWallet = async (connector) => {
 
     console.log("Attempting to connect with connector:", connector.name);
 
-    const result = await connect(wagmiConfig, { chainId: 84532, connector: connector });
+    const result = await connect(wagmiConfig, { chainId: baseSepolia.id, connector: connector });
     
     currentWalletType = 'thirdParty';
     walletAddress = result.accounts[0];
