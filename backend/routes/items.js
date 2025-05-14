@@ -6,7 +6,7 @@ const middleware = require("../middleware");
 
 // Initialize OpenAI configuration
 const openai = new OpenAI({
-  apiKey: process.env.OPEN_AI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || process.env.OPEN_AI_API_KEY,
 });
 
 // Create item with GPT-generated details using vision
