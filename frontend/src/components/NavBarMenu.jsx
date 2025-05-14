@@ -177,14 +177,12 @@ const NavBarMenu = () => {
     const callbackUrl = window.location.origin; // Current origin for callback
     const inputCurrency = "USD"; // Currency to swap from
     const toToken = "USDC"; // Token to swap to
-    const recipientAddress = account; // Use the connected wallet address
+    const recipientAddress = account; 
     
-    // Construct the ZKP2P URL with query parameters (all on one line to avoid breaking)
     const zkp2pUrl = `https://zkp2p.xyz/swap?referrer=${encodeURIComponent(referrer)}&referrerLogo=${encodeURIComponent(referrerLogo)}&callbackUrl=${encodeURIComponent(callbackUrl)}&inputCurrency=${encodeURIComponent(inputCurrency)}&toToken=${encodeURIComponent(toToken)}&recipientAddress=${encodeURIComponent(recipientAddress)}`;
     
-    console.log("Redirecting to:", zkp2pUrl); // Add logging to debug
+    console.log("Redirecting to:", zkp2pUrl); 
     
-    // Redirect user to the ZKP2P platform
     window.location.href = zkp2pUrl;
   };
 

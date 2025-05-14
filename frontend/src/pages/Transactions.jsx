@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { FaList, FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { connectWallet, getTransactions } from "../wallet/wallet.js";
+import { connectWallet, getTransactions } from "../wallet/wallet-service.js";
 
 function TransactionsPage() {
     const [user, setUser] = useState(null);

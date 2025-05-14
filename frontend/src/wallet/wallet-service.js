@@ -1,13 +1,13 @@
 // wallet/wallet-service.js
 import { createConfig, http, injected } from 'wagmi';
-import { mainnet, base } from 'wagmi/chains';
+import {base } from 'wagmi/chains';
 import { getAccount, connect, disconnect } from '@wagmi/core';
 import { createCoinbaseWalletSDK } from '@coinbase/wallet-sdk';
 import { ethers } from 'ethers';
 
 // COINBASE SMART WALLET SDK SETUP
 export const coinbaseSDK = createCoinbaseWalletSDK({
-  appName: "Your App Name",
+  appName: "Zot Swap",
   appLogoUrl: "",
   appChainIds: [84532], // Base Sepolia Testnet Chain ID
   preference: {
@@ -25,7 +25,6 @@ export const coinbaseProvider = coinbaseSDK.getProvider();
 export const wagmiConfig = createConfig({
   chains: [ base],
   transports: {
-    [mainnet.id]: http(),
     [base.id]: http(),
   },
   connectors: [
@@ -79,7 +78,7 @@ export const connectWallet = async (connector) => {
 
     console.log("Attempting to connect with connector:", connector.name);
 
-    const result = await connect(wagmiConfig, { chainId: base.id, connector: connector });
+    const result = await connect(wagmiConfig, { chainId: 84532, connector: connector });
     
     currentWalletType = 'thirdParty';
     walletAddress = result.accounts[0];
@@ -212,7 +211,6 @@ export const getUserUSDCBalance = async () => {
   }
 };
 
-// Function to send USDC gasless (works with both wallet types)
 export const sendUSDCGasless = async (amount, to = '0xD21134fAfe0729F487d9c91cD9f9977C39FB01ED') => {
   try {
     const wallet = await getWallet();

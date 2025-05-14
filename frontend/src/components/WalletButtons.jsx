@@ -48,6 +48,7 @@ function WalletButtons() {
             setAccount(null);
             walletTypeRef.current = null;
           }
+  
         } else {
           setAccount(null);
           walletTypeRef.current = null;
@@ -113,6 +114,7 @@ function WalletButtons() {
     const toToken = "USDC";
     const recipientAddress = account;
     
+    //coinbase onramp?
     // Dynamically construct the ZKP2P URL with query parameters
     const zkp2pUrl = `https://zkp2p.xyz/swap?referrer=${encodeURIComponent(referrer)}
     &callbackUrl=${encodeURIComponent(callbackUrl)}
@@ -120,7 +122,7 @@ function WalletButtons() {
     &toToken=${encodeURIComponent(toToken)}
     &recipientAddress=${encodeURIComponent(recipientAddress)}`
     // Redirect user to the ZKP2P platform
-    window.location.href = zkp2pUrl;
+    window.location.href = "https://zkp2p.xyz/swap?tab=buy";
   };
 
   return (
