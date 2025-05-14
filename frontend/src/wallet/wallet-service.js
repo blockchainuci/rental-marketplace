@@ -57,11 +57,52 @@ export const wagmiConfig = createConfig({
 });
 
 // WALLET STATE MANAGEMENT
-let currentWalletType = null; // 'coinbaseSmart' or 'thirdParty'
-let walletAddress = null;
+let currentWalletType = localStorage.getItem('walletType') || null;
+let walletAddress = localStorage.getItem('walletAddress') || null;
 let walletConnector = null;
 
-// UNIFIED API FUNCTIONS
+// Initialize walletConnector from localStorage if possible
+const connectorId = localStorage.getItem('walletConnectorId') || null;
+
+// Save wallet connection to localStorage
+const saveWalletState = (type, address, connector = null) => {
+  localStorage.setItem('walletType', type);
+  localStorage.setItem('walletAddress', address);
+  // We can't store connector object directly, but we can store its ID
+  if (connector && connector.id) {
+    localStorage.setItem('walletConnectorId', connector.id);
+  }
+};
+
+// Restore wallet connection from localStorage
+const restoreWalletState = async () => {
+  const savedType = localStorage.getItem('walletType');
+  const savedAddress = localStorage.getItem('walletAddress');
+  const savedConnectorId = localStorage.getItem('walletConnectorId');
+  
+  if (!savedType || !savedAddress) return null;
+  
+  try {
+    if (savedType === 'coinbaseSmart') {
+      // Reconnect to Coinbase wallet
+      return await connectCoinbaseSmartWallet();
+    } else if (savedType === 'thirdParty' && savedConnectorId) {
+      // Find the connector by ID
+      const connector = wagmiConfig.connectors.find(c => c.id === savedConnectorId);
+      if (connector) {
+        return await connectWallet(connector);
+      }
+    }
+  } catch (error) {
+    console.error("Error restoring wallet connection:", error);
+    // Clear invalid storage on error
+    localStorage.removeItem('walletType');
+    localStorage.removeItem('walletAddress');
+    localStorage.removeItem('walletConnectorId');
+  }
+  
+  return null;
+};
 
 // Get available third-party wallet connectors
 export const getWalletConnectors = () => {
@@ -79,7 +120,7 @@ export const connectCoinbaseSmartWallet = async () => {
     
     currentWalletType = 'coinbaseSmart';
     walletAddress = addresses[0];
-    
+    saveWalletState('coinbaseSmart', walletAddress);
     console.log("Connected to Coinbase Smart Wallet:", walletAddress);
     
     return {
@@ -105,7 +146,10 @@ export const connectWallet = async (connector) => {
     
     currentWalletType = 'thirdParty';
     walletAddress = result.accounts[0];
-    walletConnector = connector;
+    walletConnector = connector; // Store the actual connector object
+    
+    // Save to localStorage (only the ID for the connector)
+    saveWalletState('thirdParty', walletAddress, connector);
 
     console.log("Connected to wallet:", connector.name);
     
@@ -124,16 +168,47 @@ export const connectWallet = async (connector) => {
 export const disconnectWallet = async () => {
   try {
     if (currentWalletType === 'coinbaseSmart') {
+      // For Coinbase Smart Wallet
+      // Note: Coinbase SDK doesn't have a direct disconnect method
+      // We just clear our local state
       currentWalletType = null;
       walletAddress = null;
+      
+      // Clear localStorage
+      localStorage.removeItem('walletType');
+      localStorage.removeItem('walletAddress');
+      localStorage.removeItem('walletConnectorId');
+      
       console.log("Disconnected from Coinbase Smart Wallet");
       return true;
-    } else if (currentWalletType === 'thirdParty' && walletConnector) {
+    } else if (currentWalletType === 'thirdParty') {
       // For third-party wallets
-      await disconnect(wagmiConfig, { chainId: base.id, connector: walletConnector });
+      try {
+        // Get the actual connector object, not just the ID
+        const connectorId = localStorage.getItem('walletConnectorId');
+        const actualConnector = wagmiConfig.connectors.find(c => c.id === connectorId);
+        
+        if (actualConnector) {
+          // Use the wagmi disconnect function correctly
+          await disconnect(wagmiConfig, { 
+            connector: actualConnector 
+          });
+        }
+      } catch (disconnectError) {
+        console.warn("Error during disconnect operation:", disconnectError);
+        // Continue with cleanup even if disconnect fails
+      }
+      
+      // Clear state variables
       currentWalletType = null;
       walletAddress = null;
       walletConnector = null;
+
+      // Clear localStorage
+      localStorage.removeItem('walletType');
+      localStorage.removeItem('walletAddress');
+      localStorage.removeItem('walletConnectorId');
+      
       console.log("Disconnected from third-party wallet");
       return true;
     } else {
@@ -154,6 +229,17 @@ export const getWallet = async () => {
       const addresses = await coinbaseProvider.request({ method: "eth_accounts" });
       
       if (!addresses || addresses.length === 0) {
+        // If provider says we're not connected, check localStorage
+        if (localStorage.getItem('walletType') === 'coinbaseSmart' && 
+            localStorage.getItem('walletAddress')) {
+          // Return the stored wallet info, might need to reconnect
+          return {
+            address: localStorage.getItem('walletAddress'),
+            walletType: 'coinbaseSmart',
+            provider: coinbaseProvider,
+            needsReconnect: true
+          };
+        }
         throw new Error("No Coinbase wallet address found.");
       }
       
@@ -171,6 +257,21 @@ export const getWallet = async () => {
     const account = getAccount(wagmiConfig);
     
     if (!account || !account.isConnected) {
+      // If provider says we're not connected, check localStorage
+      if (localStorage.getItem('walletType') === 'thirdParty' && 
+          localStorage.getItem('walletAddress')) {
+        // Find the connector
+        const connectorId = localStorage.getItem('walletConnectorId');
+        const connector = wagmiConfig.connectors.find(c => c.id === connectorId);
+        
+        // Return the stored wallet info, might need to reconnect
+        return {
+          address: localStorage.getItem('walletAddress'),
+          walletType: 'thirdParty',
+          connector: connector,
+          needsReconnect: true
+        };
+      }
       return null;
     }
     
@@ -315,3 +416,5 @@ export const getTransactions = async () => {
     return [];
   }
 };
+
+

@@ -37,18 +37,32 @@ function WalletButtons() {
     const checkWalletConnection = async () => {
       setLoading(true);
       try {
-        const isConnected = await isWalletConnected();
+        const wallet = await getWallet();
         
-        if (isConnected) {
-          const wallet = await getWallet();
-          if (wallet) {
-            setAccount(wallet.address);
-            walletTypeRef.current = wallet.walletType;
-          } else {
-            setAccount(null);
-            walletTypeRef.current = null;
+        if (wallet) {
+          setAccount(wallet.address);
+          walletTypeRef.current = wallet.walletType;
+          
+          // Check if wallet needs reconnection
+          if (wallet.needsReconnect) {
+            console.log("Wallet connection needs to be restored");
+            // You can show a notification or auto-trigger reconnection here
+            // For example:
+            
+            toast({
+              title: "Wallet connection needs to be restored",
+              description: "Please reconnect your wallet",
+              status: "warning",
+              duration: 5000,
+              isClosable: true,
+              action: (
+                <Button colorScheme="blue" size="sm" onClick={onOpen}>
+                  Reconnect
+                </Button>
+              ),
+            });
+            
           }
-  
         } else {
           setAccount(null);
           walletTypeRef.current = null;
