@@ -70,13 +70,16 @@ const Navbar = () => {
       </Box>
 
       {/* Center */}
-      <Image
-        src="/ih_logo.png"
-        alt="Logo"
-        h="70px"
-        cursor="pointer"
-        onClick={() => navigate("/")}
-      />
+      <Flex justify="center" align="center" flex="1">
+        <Image
+          src="/ih_logo.png"
+          alt="Logo"
+          h="70px"
+          cursor="pointer"
+          onClick={() => navigate("/")}
+          mx="auto"
+        />
+      </Flex>
 
       {/* Right Side */}
       <Box>
