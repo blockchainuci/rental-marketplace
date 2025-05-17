@@ -5,7 +5,7 @@ export const sdk = createCoinbaseWalletSDK({
     appName: "Zot Swap",
     appLogoUrl: "", // TO DO: change for production URL
     //appChainIds: [8453], // Base Mainnet Chain ID
-    appChainIds: [84532], // Base Testnet Chain ID - Uses Base Sepolia ETH
+    appChainIds: [8453], // Base Testnet Chain ID - Uses Base Sepolia ETH
     preference: {
         options: "smartWalletOnly",
         attribution: {
@@ -73,7 +73,7 @@ export const sendUSDCGasless = async (amount, to = '0xD21134fAfe0729F487d9c91cD9
         const txRequest = {
             version: "1.0",
             from: wallet.address,
-            chainId: 84532, // Required for Base Sepolia
+            chainId: 8453, // Required for Base Sepolia or main net
             calls: [
                 {
                     to: USDC_CONTRACT,
