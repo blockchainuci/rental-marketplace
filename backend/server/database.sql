@@ -57,6 +57,14 @@ CREATE TABLE Users (
     wallet_address VARCHAR(256)
 );
 
+CREATE TABLE Conversations (
+    conversation_id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES Items(id),
+    lender_email VARCHAR(128) NOT NULL,
+    renter_email VARCHAR(128) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE Messages (
     id SERIAL PRIMARY KEY,
     conversation_id INTEGER NOT NULL,
@@ -67,12 +75,4 @@ CREATE TABLE Messages (
     receiver_email VARCHAR(128),
     is_read BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (conversation_id) REFERENCES Conversations(conversation_id)
-);
-
-CREATE TABLE Conversations (
-    conversation_id SERIAL PRIMARY KEY,
-    item_id INTEGER NOT NULL REFERENCES Items(id),
-    lender_email VARCHAR(128) NOT NULL,
-    renter_email VARCHAR(128) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
 );
