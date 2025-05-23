@@ -47,14 +47,14 @@ export const sendRentalEmail = async (renterEmail, item, days) => {
     }
 
     // Send email to lender
-    await axios.post("http://localhost:3001/email/send-email", {
+    await axios.post(`${process.env.REACT_APP_BACKEND_HOSTNAME}/email/send-email`, {
       to: item.lender_email.trim(),
       subject: "New Rental Request",
       html: createEmailContent(true)
     });
 
     // Send confirmation email to renter
-    await axios.post("http://localhost:3001/email/send-email", {
+    await axios.post(`${process.env.REACT_APP_BACKEND_HOSTNAME}/email/send-email`, {
       to: renterEmail.trim(),
       subject: "Rental Request Sent",
       html: createEmailContent(false)
