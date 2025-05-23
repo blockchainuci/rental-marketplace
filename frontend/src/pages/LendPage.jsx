@@ -47,7 +47,7 @@ function LendPage() {
 
       try {
         const response = await axios.get(
-          `http://localhost:3001/lenders/email/${userEmail}`
+          `${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/email/${userEmail}`
         );
         setItems(response.data);
 
@@ -56,7 +56,7 @@ function LendPage() {
           (item) =>
             axios
               .get(
-                `http://localhost:3001/carbon/emission-calculator/${item.id}`
+                `${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/emission-calculator/${item.id}`
               )
               .then((response) => response.data)
               .catch(() => null) // Return null for failed requests
@@ -86,7 +86,7 @@ function LendPage() {
   const handlePickupConfirmation = async (itemId) => {
     const token = await getBearerToken();
     try {
-      await axios.put(`http://localhost:3001/lenders/${itemId}`, {
+      await axios.put(`${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/${itemId}`, {
         is_picked_up: true,
         is_returned: false,
       },
@@ -107,7 +107,7 @@ function LendPage() {
   const handleReturnConfirmation = async (itemId) => {
     try {
       const token = await getBearerToken();
-      await axios.put(`http://localhost:3001/lenders/${itemId}`, {
+      await axios.put(`${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/${itemId}`, {
         is_picked_up: true,
         is_returned: true,
       },
@@ -128,7 +128,7 @@ function LendPage() {
   const handleDeleteItem = async (itemId) => {
     try {
       const token = await getBearerToken();
-      await axios.delete(`http://localhost:3001/lenders/${itemId}`, {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/${itemId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -143,7 +143,7 @@ function LendPage() {
     
     try {
       const token = await getBearerToken();
-      await axios.delete(`http://localhost:3001/items/${itemId}`, {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${itemId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

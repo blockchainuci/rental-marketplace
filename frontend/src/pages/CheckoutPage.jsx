@@ -56,7 +56,7 @@ function CheckoutPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/items/${id}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`);
         setItem(response.data);
       } catch (error) {
         console.error("Error fetching item:", error);
@@ -119,11 +119,11 @@ function CheckoutPage() {
       
       // Get lender's email first
       const lenderResponse = await axios.get(
-        `http://localhost:3001/lenders/${id}`
+        `${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/${id}`
       );
 
       // Update item with days_rented
-      await axios.put(`http://localhost:3001/items/${id}`, {
+      await axios.put(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`, {
         ...item,
         days_rented: days,
         status: "Awaiting Pickup",
@@ -134,7 +134,7 @@ function CheckoutPage() {
       });
 
       // Create renter record
-      await axios.post("http://localhost:3001/renters", {
+      await axios.post(`${process.env.REACT_APP_BACKEND_HOSTNAME}/renters`, {
         item_id: parseInt(id),
         email: userEmail,
         public_key: publicKey

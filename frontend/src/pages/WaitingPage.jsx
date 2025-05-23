@@ -25,7 +25,7 @@ function WaitingPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/items/${id}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`);
         setItem(response.data);
         setLoading(false);
 
@@ -34,8 +34,8 @@ function WaitingPage() {
           try {
             // Fetch both lender and renter status
             const [lenderResponse, renterResponse] = await Promise.all([
-              axios.get(`http://localhost:3001/lenders/${id}`),
-              axios.get(`http://localhost:3001/renters/${id}`),
+              axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/${id}`),
+              axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/renters/${id}`),
             ]);
 
             const newStatus = {

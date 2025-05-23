@@ -80,7 +80,7 @@ function ChatPage() {
 
     // Case other user is the lender
     try {
-      const response = await axios.get(`http://localhost:3001/messages/${user.email}/conversation/${conversation_id}`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/messages/${user.email}/conversation/${conversation_id}`);
       setMessages(response.data)
     } catch (error) {
       console.error("Error fetching message:", error);
@@ -89,7 +89,7 @@ function ChatPage() {
 
   const fetchItemAndConversation = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/conversations/${conversation_id}`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/conversations/${conversation_id}`);
       setConversation(response.data);
       setLoading(false);
     } catch (error) {
@@ -150,7 +150,7 @@ function ChatPage() {
 
   const updateChatMessages = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/messages/update_unread/${conversation_id}/${user.email}`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/messages/update_unread/${conversation_id}/${user.email}`);
     } catch (error) {
       console.error("Error fetching item:", error);
     }
@@ -177,7 +177,7 @@ function ChatPage() {
         alert("Error getting receiver data")
         return;
       }
-      const response = await axios.post(`http://localhost:3001/messages`, {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_HOSTNAME}/messages`, {
         conversation_id: conversation_id,
         text: newMessage,
         timestamp: new Date().toISOString(),

@@ -45,7 +45,7 @@ import {
     const fetchConversations = async () => {
       
       try {
-        const response = await axios.get(`http://localhost:3001/messages/conversations/${user.email}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/messages/conversations/${user.email}`);
         const sortedMessages = response.data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         setLatestMessages(sortedMessages);
