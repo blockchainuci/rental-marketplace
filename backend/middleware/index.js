@@ -1,3 +1,4 @@
+/*
 const admin = require("../config/firebase-config");
 
 class Middleware {
@@ -26,3 +27,5 @@ class Middleware {
 }
 
 module.exports = new Middleware();
+
+*/

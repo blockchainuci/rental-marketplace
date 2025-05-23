@@ -4,7 +4,7 @@ const pool = require("../db");
 const middleware = require("../middleware");
 
 // Create carbon data
-router.post("/", middleware.decodeToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const {
       item_id,
@@ -16,7 +16,7 @@ router.post("/", middleware.decodeToken, async (req, res) => {
       transport_mode,
       usage_energy_kwh_per_year,
       lifetime_years,
-      disposal_method,
+      disposal_method
     } = req.body;
 
     const newCarbon = await pool.query(
@@ -118,7 +118,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update carbon data
-router.put("/:id", middleware.decodeToken, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -172,7 +172,7 @@ router.put("/:id", middleware.decodeToken, async (req, res) => {
 });
 
 // Delete carbon data
-router.delete("/:id", middleware.decodeToken, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const deleteCarbon = await pool.query(

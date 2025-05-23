@@ -20,7 +20,7 @@ const CardBox = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/items");
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items`);
         const listedItems = response.data.filter(
           (item) => item.status === "Listed"
         );
@@ -29,7 +29,7 @@ const CardBox = () => {
         // Fetch emissions data only for Listed items
         const emissionsPromises = listedItems.map((item) =>
           axios
-            .get(`http://localhost:3001/carbon/emission-calculator/${item.id}`)
+            .get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/emission-calculator/${item.id}`)
             .then((response) => response.data)
             .catch(() => null)
         );

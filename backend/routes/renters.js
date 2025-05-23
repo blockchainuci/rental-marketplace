@@ -4,7 +4,7 @@ const middleware = require("../middleware");
 const serverTransaction = require("../functions/server_transaction");
 
 // Create renter record
-router.post("/", middleware.decodeToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { item_id, email, public_key } = req.body;
 
@@ -85,7 +85,7 @@ router.get("/:item_id", async (req, res) => {
 });
 
 // Update renter status
-router.put("/:item_id", middleware.decodeToken, async (req, res) => {
+router.put("/:item_id", async (req, res) => {
   try {
     const { item_id } = req.params;
     const { is_picked_up, is_returned } = req.body;
@@ -170,7 +170,7 @@ router.put("/:item_id", middleware.decodeToken, async (req, res) => {
 });
 
 // Delete renter record
-router.delete("/:item_id", middleware.decodeToken, async (req, res) => {
+router.delete("/:item_id", async (req, res) => {
   try {
     const { item_id } = req.params;
     await pool.query("DELETE FROM renter WHERE item_id = $1", [item_id]);

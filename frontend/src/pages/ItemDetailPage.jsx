@@ -59,9 +59,9 @@ function ItemDetailPage() {
       try {
         const [itemResponse, carbonResponse, emissionsResponse] =
           await Promise.all([
-            axios.get(`http://localhost:3001/items/${id}`),
-            axios.get(`http://localhost:3001/carbon/item/${id}`),
-            axios.get(`http://localhost:3001/carbon/emission-calculator/${id}`),
+            axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`),
+            axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/item/${id}`),
+            axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/emission-calculator/${id}`),
           ]);
         setItem(itemResponse.data);
 
