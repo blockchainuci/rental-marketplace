@@ -33,7 +33,7 @@ function ChatPage() {
 
   const HOT_BUTTON_MESSAGE = "Hi! Is the item still available for rent?"
   // TO DO: implement sockets with backend
-  // const socket = io("http://localhost:3001"); // Replace with server URL
+  // const socket = io(`${process.env.REACT_APP_BACKEND_HOSTNAME}`); // Replace with server URL
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {

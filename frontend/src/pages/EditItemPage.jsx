@@ -112,6 +112,7 @@ function EditItemPage() {
         images,
         email: userEmail,
         status: "Listed",
+        days_rented: 0,
       });
 
       alert("Item updated successfully");
