@@ -59,15 +59,15 @@ function ItemDetailPage() {
       try {
         const [itemResponse, carbonResponse, emissionsResponse] =
           await Promise.all([
-            axios.get(`http://localhost:3001/items/${id}`),
-            axios.get(`http://localhost:3001/carbon/item/${id}`),
-            axios.get(`http://localhost:3001/carbon/emission-calculator/${id}`),
+            axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`),
+            axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/item/${id}`),
+            axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/emission-calculator/${id}`),
           ]);
         setItem(itemResponse.data);
 
         // Fetch lender email and check if current user is the owner
         const lenderResponse = await axios.get(
-          `http://localhost:3001/lenders/${id}`
+          `${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/${id}`
         );
         setLenderEmail(lenderResponse.data.email);
         setIsOwner(lenderResponse.data.email === currentUserEmail);
@@ -156,7 +156,7 @@ function ItemDetailPage() {
       return item.email;
     }
     try {
-      const response = await axios.get(`http://localhost:3001/lenders/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/${id}`);
       return response.data.email;
     } catch (error) {
       setLoading(false);
@@ -166,7 +166,7 @@ function ItemDetailPage() {
 
   const fetchChatRoom = async (item_id, lenderEmail, renter_email) => {
     try {
-      const response = await axios.get(`http://localhost:3001/conversations/${item_id}/${lenderEmail}/${renter_email}`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/conversations/${item_id}/${lenderEmail}/${renter_email}`);
       return response;
     } catch (error) {
       console.error("Error fetching item:", error);
@@ -195,7 +195,7 @@ function ItemDetailPage() {
       navigate(`/chat/${chatRoom.data.conversation_id}`);
     } catch(error) {
       // The chat room doesn't exist make a new one
-      const response = await axios.post(`http://localhost:3001/conversations`, {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_HOSTNAME}/conversations`, {
         item_id: id,
         lender_email: lenderEmail,
         renter_email: currentUserEmail

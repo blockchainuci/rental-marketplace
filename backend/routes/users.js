@@ -3,7 +3,7 @@ const pool = require("../db");
 const middleware = require("../middleware");
 
 // Create user
-router.post("/", middleware.decodeToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { email } = req.body;
     const newUser = await pool.query(
@@ -41,7 +41,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update user
-router.put("/:id", middleware.decodeToken, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { email, wallet_address } = req.body;
@@ -57,7 +57,7 @@ router.put("/:id", middleware.decodeToken, async (req, res) => {
 });
 
 // Delete user
-router.delete("/:id", middleware.decodeToken, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query("DELETE FROM users WHERE id = $1", [id]);

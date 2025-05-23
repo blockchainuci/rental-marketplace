@@ -11,7 +11,7 @@ function LedgerPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/items/ledger");
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/ledger`);
         // Filter out items with status "Listed"
         const filteredItems = response.data.filter(
           (item) => item.status !== "Listed"
@@ -21,7 +21,7 @@ function LedgerPage() {
         // Fetch emissions data for filtered items
         const emissionsPromises = filteredItems.map((item) =>
           axios
-            .get(`http://localhost:3001/carbon/emission-calculator/${item.id}`)
+            .get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/emission-calculator/${item.id}`)
             .then((response) => response.data)
             .catch(() => null)
         );

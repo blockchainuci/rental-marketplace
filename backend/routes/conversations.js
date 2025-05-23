@@ -2,12 +2,12 @@ const router = require("express").Router();
 const pool = require("../db");
 const middleware = require("../middleware");
 
-router.post("/", middleware.decodeToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const {
       item_id,
       lender_email,
-      renter_email,
+      renter_email
     } = req.body;
 
     // Begin transaction

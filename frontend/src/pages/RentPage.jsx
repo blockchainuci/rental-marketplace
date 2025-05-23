@@ -47,14 +47,14 @@ function RentPage() {
 
       try {
         const response = await axios.get(
-          `http://localhost:3001/renters/email/${userEmail}`
+          `${process.env.REACT_APP_BACKEND_HOSTNAME}/renters/email/${userEmail}`
         );
         setItems(response.data);
 
         // Fetch emissions data for each item
         const emissionsPromises = response.data.map((item) =>
           axios
-            .get(`http://localhost:3001/carbon/emission-calculator/${item.id}`)
+            .get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/emission-calculator/${item.id}`)
             .then((response) => response.data)
             .catch(() => null)
         );
@@ -83,7 +83,7 @@ function RentPage() {
   const handlePickupConfirmation = async (itemId) => {
     const token = await getBearerToken();
     try {
-      await axios.put(`http://localhost:3001/renters/${itemId}`, {
+      await axios.put(`${process.env.REACT_APP_BACKEND_HOSTNAME}/renters/${itemId}`, {
         is_picked_up: true,
         is_returned: false,
       },
@@ -104,7 +104,7 @@ function RentPage() {
   const handleReturnConfirmation = async (itemId) => {
     const token = await getBearerToken();
     try {
-      await axios.put(`http://localhost:3001/renters/${itemId}`, {
+      await axios.put(`${process.env.REACT_APP_BACKEND_HOSTNAME}/renters/${itemId}`, {
         is_picked_up: true,
         is_returned: true,
       },

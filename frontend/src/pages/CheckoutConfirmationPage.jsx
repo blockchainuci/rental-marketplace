@@ -41,12 +41,12 @@ function CheckoutConfirmationPage() {
     const fetchData = async () => {
       try {
         const itemResponse = await axios.get(
-          `http://localhost:3001/items/${id}`
+          `${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`
         );
         setItem(itemResponse.data);
 
         const lenderResponse = await axios.get(
-          `http://localhost:3001/lenders/${id}`
+          `${process.env.REACT_APP_BACKEND_HOSTNAME}/lenders/${id}`
         );
         setLenderEmail(lenderResponse.data.email);
 

@@ -163,7 +163,7 @@ const handleImageUpload = async (e) => {
       const token = await getBearerToken();
       // Create item in database with email
 
-      const response = await axios.post(`http://localhost:3001/items`, {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items`, {
         name,
         description,
         rental_fee: parseFloat(rentalFee),

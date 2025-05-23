@@ -17,7 +17,6 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage, auth } from "../firebase";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { getBearerToken } from "../contexts/AuthContext";
 
 function EditItemPage() {
   const { id } = useParams();
@@ -39,7 +38,7 @@ function EditItemPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/items/${id}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`);
         const item = response.data;
         
         //populate all fields with existing data so user knows what they're editing
@@ -103,8 +102,8 @@ function EditItemPage() {
         return;
       }
 
-      const token = await getBearerToken();
-      await axios.put(`http://localhost:3001/items/${id}`, {
+
+      await axios.put(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`, {
         name,
         description,
         rental_fee: parseFloat(rentalFee),
@@ -113,10 +112,7 @@ function EditItemPage() {
         images,
         email: userEmail,
         status: "Listed",
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        days_rented: 0,
       });
 
       alert("Item updated successfully");

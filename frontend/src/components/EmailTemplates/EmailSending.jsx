@@ -50,7 +50,7 @@ const EmailSending = () => {
         };
 
         try {
-            const response = await fetch("http://localhost:3001/email/send-email", {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_HOSTNAME}/email/send-email`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

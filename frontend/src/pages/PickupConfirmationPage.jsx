@@ -27,7 +27,7 @@ function PickupConfirmationPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/items/${id}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOSTNAME}/items/${id}`);
         setItem(response.data);
 
         // Calculate return date

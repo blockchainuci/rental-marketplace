@@ -35,7 +35,7 @@ function SignUpPage() {
       const result = await signInWithPopup(auth, provider);
 
       // Then, add user to your database using axios
-      await axios.post("http://localhost:3001/users", {
+      await axios.post(`${process.env.REACT_APP_BACKEND_HOSTNAME}/users`, {
         email: email
       },
       {

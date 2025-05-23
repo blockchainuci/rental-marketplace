@@ -12,7 +12,7 @@ const ItemCard = ({ id, images, rental_fee, name }) => {
     const fetchEmissions = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/carbon/emission-calculator/${id}`
+          `${process.env.REACT_APP_BACKEND_HOSTNAME}/carbon/emission-calculator/${id}`
         );
         setEmissionsData(response.data);
       } catch (error) {
